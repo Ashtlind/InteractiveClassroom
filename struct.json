@@ -1,0 +1,81 @@
+// Read by all where: Date > Date + 2 hours
+// Write by users where: Users/userguid/Teaches contains newData.Child("Class")
+// ^ && data.parent().Child($joiner) == null || && data.parent().Child($joiner).Child(Date) <= Date + 2 hours
+"Joiners" : {
+  "1234" : {
+    "Class" : "-K1fr2-x-jQPIVVKlr55",
+    "Date" : "2016-04-04 2:01pm"
+  }
+}
+
+// * Classes
+// Read / Write by users where: Users/userid/Teaches/$classguid != null
+
+// * Name && * Teacher && * CurrentLesson
+// Read by users where: Users/userid/Partakes/classguid != null
+
+// * Students
+// Write by users where: data.parent() == data.parent().parent().parent().parent().child("CurrentLesson")
+// ^ && $userid = auth.uid
+
+// * Answers
+// Write by users where: data.parent() == data.parent().parent().parent().parent().child("CurrentTopic")
+// ^ && $userid = auth.uid
+"Classes" : {
+  "-K1fr2-x-jQPIVVKlr55" : {
+    "Name" : "Name of class",
+    "Teacher" : "google:12312345",
+    "CurrentLesson" : "-K1fr2-x-jQPIVVKlr22",
+    "Lessons" : {
+      "-K1fr2-x-jQPIVVKlr22" : {
+        "Date" : "2016-04-04 2:01pm",
+        "CurrentTopic" : "-K1fr2-x-jQPIVVKlr99",
+        "Students" : {
+          "google:1298318293" : true
+        },
+        "Topics" : {
+          "-K1fr2-x-jQPIVVKlr99" : {
+            "Date" : "2016-04-04 2:01pm",
+            "AnswerType" : "boolean",
+            "Answers" : {
+              "google:1298318293" : {
+                "Answer" : 0,
+                "Date" : "2016-04-04 2:01pm"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// Read / Write by user where: userguid == auth.guid
+"Users" : {
+  "google:12312345" : {
+    "Lamps" : {
+      "-K1fr2-x-jQPIVVKlrMm" : "LO10"
+    },
+    "CurrentClass" : "-K1fr2-x-jQPIVVKlr55",
+    "Teaches" : {
+      "-K1fr2-x-jQPIVVKlrb7" : "-K1fr2-x-jQPIVVKlr55"
+    },
+    "Partakes" : null
+  },
+  "google:1298318293" : {
+    "Lamps" : null,
+    "CurrentClass" : "-K1fr2-x-jQPIVVKlr55",
+    "Partakes" : {
+      "-K1fr2-x-jQPIVVKlrb9" : "-K1fr2-x-jQPIVVKlr55"
+    }
+  }
+}
+
+// Read / Write = false - only in dashbard for now
+"Hue" : {
+  "LO10" : {
+    "Bridge" : "172.16.12.123",
+    "LampID" : 1
+  }
+}
