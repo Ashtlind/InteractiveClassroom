@@ -1,0 +1,76 @@
+
+<div ng-controller="Teacher" class="teacherAngularApp">
+  <div class="teacher-dash">
+    <div class="answ-cont">
+      <div ng-hide="CurrentSession.Answers == undefined" class="answ answ-true">
+        <div class="answ-bottom-border"></div>
+        <h1>{{ CurrentSession.TrueCount }}</h1>
+      </div>
+      <div ng-hide="CurrentSession.Answers == undefined" class="answ answ-false">
+        <h1>{{ CurrentSession.FalseCount }}</h1>
+      </div>
+    </div>
+    <div ng-class="findColor((CurrentSession.FalseCount/stuCount)*100)" class="dash-bg">
+      <div class="dash-options">
+        <h1><span class="fa fa-book"></span>&nbsp;&nbsp;{{ clas }}</h1>
+        <h2 ng-show="CurrentSession.Answers != undefined" class="inline">{{ CurrentSession.TrueCount + CurrentSession.FalseCount }} total answer{{ pluralsAreGoodIGuess(CurrentSession.TrueCount + CurrentSession.FalseCount) }}</h2>
+        <div ng-show="CurrentSession.Answers != undefined" class="progress">
+          <div style="width:{{(CurrentSession.TrueCount/stuCount)*100}}%" class="prog-true"></div>
+          <div style="width:{{(CurrentSession.FalseCount/stuCount)*100}}%" class="prog-false"></div>
+        </div><br/>
+        <p class="inline"><span class="fa fa-lightbulb-o"></span>&nbsp;&nbsp;{{ lampSel.Lamp }}</p>
+        <select ng-model="lampSel" ng-options="lmp.Name for (key,lmp) in Lamps" class="white">
+          <option></option>
+        </select>
+        <p class="inline">Ip: {{ lampSel.Ip }} AppKey: {{ lampSel.AppKey }}</p><br/>
+        <label>Student Count:</label>
+        <input id="StudentCount" type="Text" ng-keypress="stuCountChange($event)" ng-model="stuCount" class="white"/>
+        <h3>Current Lesson: {{ Settings.CurrentLesson }}</h3>
+        <h3>Current Topic: {{ Settings.CurrentSession }}</h3>
+        <button ng-show="Settings.CurrentLesson == ''" type="button" ng-click="createNewLesson()" class="white">Start Lesson</button>
+        <button ng-hide="Settings.CurrentLesson == ''" type="button" ng-click="finishLesson()" class="white">End Lesson</button>
+        <button ng-hide="Settings.CurrentLesson == ''" type="button" ng-click="createNewSession()" class="white">New Topic</button>
+      </div>
+    </div>
+    <div ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined" class="dash-bg-under-title-cont">
+      <div ng-class="findColor((CurrentSession.FalseCount/stuCount)*100)" class="dash-bg-under-title">Lamp colour based on currently confused students: {{(CurrentSession.FalseCount/stuCount)*100}}%&nbsp;&nbsp;<span ng-click="editc=!editc" class="fa fa-edit csr"></span></div>
+    </div>
+    <div ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined" class="dash-bg-under">
+      <div ng-repeat="(index, barcolor) in colors" ng-if="index&gt;0" style="width:{{colorPercDiff(barcolor)}};" ng-class="'bglc-'+barcolor.color" class="dash-bg-under-color"></div>
+      <div class="dash-bg-under-color bgc-blue"></div>
+      <div class="dash-bg-under-current-container">
+        <div style="margin-left: {{(CurrentSession.FalseCount/stuCount)*100}}%" class="dash-bg-under-current">
+          <div class="dash-bg-under-arrow"></div><span class="dash-bg-under-perc fa fa-lightbulb-o"></span>
+        </div>
+      </div>
+    </div>
+    <div ng-show="editc" class="color-choose">
+      <p>Edit colour percentages.</p>
+      <div ng-repeat="(index, thecolor) in colors" ng-if="index&gt;0" class="color-option">
+        <div class="color-option-previews">
+          <div ng-repeat="thecolors in avalicolors" ng-class="{'active' : thecolors==thecolor.color};" ng-click="thecolor.color=thecolors" class="color-option-preview {{'bglc-'+thecolors}}"></div>
+        </div>
+        <div class="color-option-values">
+          <div class="prev-prec">{{ colors[index-1].perc }}</div><span class="fa fa-arrow-right"></span>
+          <input type="Text" ng-model="thecolor.perc" ng-if="index&lt;colors.length-1" class="blue"/>
+          <div ng-if="index==colors.length-1" class="prev-prec">{{ thecolor.perc }}</div><span ng-click="colors.splice(index, 1)" ng-if="index&lt;colors.length-1" class="fa fa-times text-red csr"></span><span ng-click="colors.splice(index, 0, {'color':'Violet', 'perc': thecolor.perc})" class="fa fa-plus text-green csr"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-show="CurrentSession.Answers != undefined" class="responses">
+    <h2>Current Topic Answers</h2>
+    <table>
+      <thead>
+        <th>Answer</th>
+        <th>Date</th>
+      </thead>
+      <tbody>
+        <tr ng-repeat="answer in CurrentSession.Answers">
+          <td>{{ answer.Answer }}</td>
+          <td>{{ answer.Date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

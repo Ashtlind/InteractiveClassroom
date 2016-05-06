@@ -1,0 +1,66 @@
+.teacherAngularApp(ng-controller='Teacher')
+  .teacher-dash
+      .answ-cont
+        .answ.answ-true(ng-hide='CurrentSession.Answers == undefined')
+          .answ-bottom-border
+          h1 {{ CurrentSession.TrueCount }}
+        .answ.answ-false(ng-hide='CurrentSession.Answers == undefined')
+          h1 {{ CurrentSession.FalseCount }}
+      .dash-bg(ng-class="findColor((CurrentSession.FalseCount/stuCount)*100)")
+        .dash-options
+          h1
+            span.fa.fa-book
+            &nbsp;&nbsp;{{ clas }}
+          h2.inline(ng-show='CurrentSession.Answers != undefined').
+            {{ CurrentSession.TrueCount + CurrentSession.FalseCount }} total answer{{ pluralsAreGoodIGuess(CurrentSession.TrueCount + CurrentSession.FalseCount) }}
+          .progress(ng-show='CurrentSession.Answers != undefined')
+            .prog-true(style="width:{{(CurrentSession.TrueCount/stuCount)*100}}%")
+            .prog-false(style="width:{{(CurrentSession.FalseCount/stuCount)*100}}%")
+          br
+          p.inline
+            span.fa.fa-lightbulb-o
+            &nbsp;&nbsp;{{ lampSel.Lamp }}
+          select(ng-model='lampSel', ng-options='lmp.Name for (key,lmp) in Lamps').white
+            option
+          p.inline.
+            Ip: {{ lampSel.Ip }} AppKey: {{ lampSel.AppKey }}
+          br
+          label Student Count:
+          input#StudentCount(type='Text', ng-keypress='stuCountChange($event)', ng-model='stuCount').white
+          h3 Current Lesson: {{ Settings.CurrentLesson }}
+          h3 Current Topic: {{ Settings.CurrentSession }}
+          button(ng-show="Settings.CurrentLesson == ''", type='button', ng-click='createNewLesson()').white Start Lesson
+          button(ng-hide="Settings.CurrentLesson == ''", type='button', ng-click='finishLesson()').white End Lesson
+          button(ng-hide="Settings.CurrentLesson == ''", type='button', ng-click='createNewSession()').white New Topic
+      .dash-bg-under-title-cont(ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined")
+        .dash-bg-under-title(ng-class="findColor((CurrentSession.FalseCount/stuCount)*100)") Lamp colour based on currently confused students: {{(CurrentSession.FalseCount/stuCount)*100}}%&nbsp;&nbsp;
+          span.fa.fa-edit.csr(ng-click="editc=!editc")
+      .dash-bg-under(ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined")
+        .dash-bg-under-color(ng-repeat="(index, barcolor) in colors", ng-if="index>0", style="width:{{colorPercDiff(barcolor)}};", ng-class="'bglc-'+barcolor.color")
+        .dash-bg-under-color.bgc-blue
+        .dash-bg-under-current-container
+          .dash-bg-under-current(style="margin-left: {{(CurrentSession.FalseCount/stuCount)*100}}%")
+            .dash-bg-under-arrow
+            span.dash-bg-under-perc.fa.fa-lightbulb-o
+      .color-choose(ng-show="editc")
+        p Edit colour percentages.
+        .color-option(ng-repeat="(index, thecolor) in colors", ng-if="index>0")
+          .color-option-previews
+            .color-option-preview(ng-repeat="thecolors in avalicolors", ng-class="{'active' : thecolors==thecolor.color};", class="{{'bglc-'+thecolors}}", ng-click="thecolor.color=thecolors")
+          .color-option-values
+            .prev-prec {{ colors[index-1].perc }}
+            span.fa.fa-arrow-right
+            input(type='Text', ng-model='thecolor.perc', ng-if="index<colors.length-1").blue
+            .prev-prec(ng-if="index==colors.length-1") {{ thecolor.perc }}
+            span.fa.fa-times.text-red.csr(ng-click="colors.splice(index, 1)", ng-if="index<colors.length-1")
+            span.fa.fa-plus.text-green.csr(ng-click="colors.splice(index, 0, {'color':'Violet', 'perc': thecolor.perc})")
+  .responses(ng-show='CurrentSession.Answers != undefined')
+    h2 Current Topic Answers
+    table
+      thead
+        th Answer
+        th Date
+      tbody
+        tr(ng-repeat='answer in CurrentSession.Answers')
+          td {{ answer.Answer }}
+          td {{ answer.Date }}
