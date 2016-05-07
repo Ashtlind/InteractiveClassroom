@@ -1,2 +1,9 @@
 .fullpagecentercont(ng-controller="Home")
-    button(ng-click="login()")
+  header
+    h1 Interactive Classroom
+    .homebtngrp(ng-class="btngrpclass")
+      button(ng-click="joinClassroom()").homebtngrp-left
+      input(type="Text", ng-model="invitecode").homebtngrp-left-input
+      label.homebtngrp-left-input-label Please enter your invite code
+      button(ng-click="login()").open.homebtngrp-right
+  include ../svg/happyFace.svg

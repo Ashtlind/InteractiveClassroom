@@ -13,7 +13,7 @@ $(document).ready(function () {
 var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute"]);
 
 
-// Auth factory
+// Firebase auth factory
 app.factory("Auth", ["$firebaseAuth",
   function($firebaseAuth) {
     var ref = new Firebase("https://interactiveclassroom.firebaseio.com");
