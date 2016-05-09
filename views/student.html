@@ -1,9 +1,12 @@
 
-<div ng-controller="Student" class="studentAngular">
-  <div ng-controller="StudentHue" class="divStudent">
-    <h1>Student Section</h1>
-    <button type="button" ng-click="answer(true)" class="blue">I understand</button>
-    <button type="button" ng-click="answer(false)" class="blue">I am confused</button>
-    <input type="text" ng-model="tempuserid" placeholder="UserID" class="blue"/>
+<div class="studentAngular">
+  <div class="divStudent">
+    <header>
+      <h1>{{classInfo.Name}}</h1>
+    </header>
+    <button type="button" ng-click="answer(2)" class="blue">I understand</button>
+    <button type="button" ng-click="answer(1)" class="blue">I am normal</button>
+    <button type="button" ng-click="answer(0)" class="blue">I am confused</button>
+    <p>{{currentAnswer | json}}</p>
   </div>
 </div>

@@ -342,6 +342,7 @@ select option {
           align-items: center;
   text-align: center;
   overflow: hidden;
+  padding-bottom: 10%;
 }
 
 .homeface {

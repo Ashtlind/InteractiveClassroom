@@ -1,55 +1,37 @@
-angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', function ($scope, $firebaseObject, $firebaseArray) {
-    console.log("loaded!");
-    // This will be set from synergetic current class code:
-    // ***
-    $scope.clas = "MAT0813_23C";
-    //$scope.userID = "79051";
-    // ***
+angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', 'Auth', '$interval', function ($scope, $firebaseObject, $firebaseArray, $routeParams, Auth, $interval) {
+    $scope.classid = $routeParams.classid.substring(1);
 
-    $scope.fbRefClass = "https://interactiveclassroom.firebaseio.com/Classes/" + $scope.clas;
+    var authData = Auth.$getAuth();
 
-    // Get current session and settings from class and lesson
-    var settingsRef = new Firebase($scope.fbRefClass + "/Settings");
-    $scope.Settings = $firebaseObject(settingsRef);
+    var classRef = new Firebase("https://interactiveclassroom.firebaseio.com/Classes/" + $scope.classid);
 
-    $scope.answer = function(ans) {
+    // Get class info
+    var classInfoRef = classRef.child("/Pub");
+    $scope.classInfo = $firebaseObject(classInfoRef);
 
-        if ($scope.Settings.CurrentLesson != "" && $scope.Settings.CurrentSession != "") {
-            var answersRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions/" + $scope.Settings.CurrentSession + "/Answers/" + $scope.tempuserid);
-            var current = $firebaseObject(answersRef);
+    $scope.currentAnswer = {};
 
-            current.$loaded(function () {
-                // If answer is not the first take one from the other also
-                var changing = current.Answer != undefined;
+    $scope.classInfo.$loaded(function () {
+      var lessonRef = classRef.child("Lessons").child($scope.classInfo.CurrentLesson);
+      Auth.$requireAuth().then(function () {
+        var lessonHBRef = lessonRef.child("Students").child(authData.uid);
+        $scope.myHeartbeat = $firebaseObject(lessonHBRef);
+        // Setup a heartbeat loop
+        $scope.myHeartbeat.$value = Date();
+        $scope.myHeartbeat.$save();
+        $interval(function () {
+          $scope.myHeartbeat.$value = Date();
+          $scope.myHeartbeat.$save();
+        }, 30000);
+        // Get current topic answer
+        var topicAnswer = lessonRef.child("Topics").child($scope.classInfo.CurrentTopic).child("Answers").child(authData.uid);
+        $scope.currentAnswer = $firebaseObject(topicAnswer);
+      });
+    });
 
-                // Update firebase if answer has changed
-                if (current.Answer != ans) {
-                    answersRef.set({ 'Answer': ans, 'Date': Date() });
-
-                    var sessionTrue = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions/" + $scope.Settings.CurrentSession + "/TrueCount");
-                    var sessionFalse = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions/" + $scope.Settings.CurrentSession + "/FalseCount");
-
-                    if (ans) {
-                        sessionTrue.transaction(function(current_value) {
-                            return (current_value || 0) + 1;
-                        });
-                        if (changing) {
-                            sessionFalse.transaction(function (current_value) {
-                                return (current_value || 0) - 1;
-                            });
-                        }
-                    } else {
-                        sessionFalse.transaction(function(current_value) {
-                            return (current_value || 0) + 1;
-                        });
-                        if (changing) {
-                            sessionTrue.transaction(function(current_value) {
-                                return (current_value || 0) - 1;
-                            });
-                        }
-                    }
-                }
-            });
-        }
+    $scope.answer = function (answer) {
+      $scope.currentAnswer.Answer = answer;
+      $scope.currentAnswer.Date = Date();
+      $scope.currentAnswer.$save();
     };
 }]);

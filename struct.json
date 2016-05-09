@@ -11,32 +11,39 @@
 // * Classes
 // Read / Write by users where: Users/userid/Teaches/$classguid != null
 
-// * Name && * Teacher && * CurrentLesson
+// * Pub - Class
 // Read by users where: Users/userid/Partakes/classguid != null
 
-// * Students
+
+// * Students - Lesson
 // Write by users where: data.parent() == data.parent().parent().parent().parent().child("CurrentLesson")
 // ^ && $userid = auth.uid
 
-// * Answers
+// * Pub - Lesson
+// Read if current lesson
+
+// * Answers - Topic
 // Write by users where: data.parent() == data.parent().parent().parent().parent().child("CurrentTopic")
 // ^ && $userid = auth.uid
 "Classes" : {
   "-K1fr2-x-jQPIVVKlr55" : {
-    "Name" : "Name of class",
-    "Teacher" : "google:12312345",
-    "CurrentLesson" : "-K1fr2-x-jQPIVVKlr22",
+    "Pub" : {
+      "Name" : "Name of class",
+      "Teacher" : "google:12312345",
+      "CurrentLesson" : "-K1fr2-x-jQPIVVKlr22",
+      "CurrentTopic" : "-K1fr2-x-jQPIVVKlr99"
+    },
     "Lessons" : {
       "-K1fr2-x-jQPIVVKlr22" : {
-        "Date" : "2016-04-04 2:01pm",
-        "CurrentTopic" : "-K1fr2-x-jQPIVVKlr99",
+        "Pub" : {
+          "Date" : "2016-04-04 2:01pm"
+        },
         "Students" : {
-          "google:1298318293" : true
+          "google:1298318293" : "Heartbeat time - update every min"
         },
         "Topics" : {
           "-K1fr2-x-jQPIVVKlr99" : {
             "Date" : "2016-04-04 2:01pm",
-            "AnswerType" : "boolean",
             "Answers" : {
               "google:1298318293" : {
                 "Answer" : 0,

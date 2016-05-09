@@ -3,13 +3,13 @@ angular.module('IC').run(["$rootScope", "$location", function($rootScope, $locat
     // We can catch the error thrown when the $requireAuth promise is rejected
     // and redirect the user back to the home page
     if (error === "AUTH_REQUIRED") {
-      $location.path("/:login");
+      $location.path("/");
     }
   });
 }]);
 
 angular.module('IC').config(["$routeProvider", function($routeProvider) {
-  $routeProvider.when("/student", {
+  $routeProvider.when("/class:classid", {
     // the rest is the same for ui-router and ngRoute...
     controller: "Student",
     templateUrl: "student.html",
@@ -22,7 +22,7 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
         return Auth.$requireAuth();
       }]
     }
-  }).when("/teacher", {
+  }).when("/dashboard:classid", {
     // the rest is the same for ui-router and ngRoute...
     controller: "Teacher",
     templateUrl: "teacher.html",
@@ -37,6 +37,8 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
     }
   }).when('/', {
     templateUrl : 'home.html',
-    controller  : 'Student'
+    controller  : 'Home'
+  }).otherwise({
+    redirectTo: '/'
   });
 }]);

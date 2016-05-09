@@ -1,6 +1,8 @@
-.studentAngular(ng-controller='Student')
-  .divStudent(ng-controller="StudentHue")
-    h1 Student Section
-    button(type="button",ng-click="answer(true)").blue I understand
-    button(type="button",ng-click="answer(false)").blue I am confused
-    input(type="text",ng-model="tempuserid",placeholder="UserID").blue
+.studentAngular
+  .divStudent
+    header
+      h1 {{classInfo.Name}}
+    button(type="button",ng-click="answer(2)").blue I understand
+    button(type="button",ng-click="answer(1)").blue I am normal
+    button(type="button",ng-click="answer(0)").blue I am confused
+    p {{currentAnswer | json}}
