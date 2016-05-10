@@ -1,7 +1,16 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', 'Auth', function ($scope, $firebaseObject, $firebaseArray, $routeParams, Auth) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', function ($scope, $firebaseObject, $firebaseArray, $routeParams) {
+    var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+
     $scope.classid = $routeParams.classid.substring(1);
 
-    var authData = Auth.$getAuth();
+    // Get the user's guid initially and subscribe to changes
+    $rootScope.$broadcast('userGuidReq', 'Teacher');
+    $scope.$on('userGuidTeacher', function (event, guid) {
+      if (guid == undefined || guid == null)
+        $scope.userData = {};
+      else
+        $scope.userData = $firebaseObject(root.child("Users").child(guid));
+    });
 
     var classRef = new Firebase("https://interactiveclassroom.firebaseio.com/Classes/" + $scope.classid);
 

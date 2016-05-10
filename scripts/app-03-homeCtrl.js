@@ -1,69 +1,56 @@
-angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', 'Auth', '$timeout', '$location', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location) {
+angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location) {
   var root = new Firebase("https://interactiveclassroom.firebaseio.com");
 
-  $scope.userData = {};
   $scope.btngrpclass = "";
   $scope.invitecode = "";
   $scope.labeltext = "";
+  $scope.addingClass = false;
+  $scope.joinBtn = false;
 
-  //Init auth
-  var initAuth = Auth.$getAuth();
-  if (initAuth != null) {
-    $scope.userData = $firebaseObject(root.child("Users").child(initAuth.uid));
-  }
-
-  $scope.login = function(addnew) {
-    Auth.$authWithOAuthPopup('google', {scope: "email"}).then(function(authData) {
-      $scope.userData = $firebaseObject(root.child("Users").child(authData.uid));
-      $scope.userData.uid = authData.uid;
-      $scope.userData.email = authData.google.email;
-      $scope.userData.name = authData.google.displayName;
-      $scope.userData.profileImageURL = authData.google.profileImageURL;
-      $scope.$broadcast('userLogin', true, $scope.userData, addnew);
-      $scope.userData.$save();
-    }).catch(function(error) {
-      if (error.code === 'TRANSPORT_UNAVAILABLE') {
-        Auth.$authWithOAuthRedirect(authMethod).then(function(authData) {
-
-        });
-      } else {
-        $scope.$broadcast('userLogin', false, $scope.userData, addnew);
-        console.log(error);
-      }
-    });
-  };
+  // Get the user's guid initially and subscribe to changes
+  $rootScope.$broadcast('userGuidReq', 'Home');
+  $scope.$on('userGuidHome', function (event, guid) {
+    if (guid == undefined || guid == null){
+      $scope.userData = {};
+    } else {
+      // That means we are authenticated
+      $scope.userData = $firebaseObject(root.child("Users").child(guid));
+      $scope.userData.$loaded(function () {
+        if ($scope.joinBtn){
+          // If we had pressed a call to action and now authenticated - continue
+          $scope.btngrpclass = "homebtngrp--loggedin";
+          $scope.invitecode = "Welcome " + userData.name.split(" ")[0] + "!";
+          $timeout(function () {
+            $scope.invitecode = "";
+            $scope.labeltext = $scope.labelText(addnew);
+            $scope.btngrpclass = "homebtngrp--invitecode";
+            setTimeout(function() {
+              $('.homebtngrp-left-input').focus();
+            }, 500);
+            }, 2000);
+          } else {
+            $scope.cancel();
+          }
+        }
+      });
+    }
+  });
 
   $scope.cancel = function (){
     $scope.btngrpclass = "";
     $scope.invitecode = "";
+    $scope.addingClass = false;
+    $scope.joinBtn = false;
   };
 
-  $scope.$on('userLogin', function (event, success, userData, addnew) {
-    if (success) {
-      console.log(success);
-      console.log(userData);
-      console.log(addnew);
-      $scope.btngrpclass = "homebtngrp--loggedin";
-      $scope.invitecode = "Welcome " + userData.name.split(" ")[0] + "!";
-      $timeout(function () {
-        $scope.invitecode = "";
-        $scope.labeltext = $scope.labelText(addnew);
-        $scope.btngrpclass = "homebtngrp--invitecode";
-        setTimeout(function() {
-          $('.homebtngrp-left-input').focus();
-        }, 500);
-        }, 2000);
-    } else {
-      $scope.cancel();
-    }
-  });
-
   $scope.classroom = function (addnew) {
-    if (Auth.$getAuth() == null) {
+      $scope.addingClass = addnew;
+    if ($scope.userData.uid == undefined) {
         $scope.btngrpclass = "homebtngrp--login";
-        $scope.login(addnew);
+        $scope.joinBtn = true;
+        $rootScope.$broadcast('login');
     } else {
-      $scope.labeltext = $scope.labelText(addnew);
+      $scope.labeltext = $scope.labelText();
       $scope.btngrpclass = "homebtngrp--invitecode";
       setTimeout(function() {
         $('.homebtngrp-left-input').focus();
@@ -71,8 +58,8 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     }
   };
 
-  $scope.labelText = function (addnew) {
-    if (addnew) {
+  $scope.labelText = function () {
+    if ($scope.addingClass) {
       return "Name your new class.";
     } else {
       return "Please enter your invite code.";
@@ -90,7 +77,10 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
         break;
     case "homebtngrp--invitecode":
         // Open Class or Create class
-        $scope.joinClass();
+        if ($scope.addingClass)
+          $scope.createClass();
+        else
+          $scope.joinClass();
         break;
     default:
         $scope.classroom(true);
