@@ -89,40 +89,56 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
         // Nothing
         break;
     case "homebtngrp--invitecode":
-        // Open Class
+        // Open Class or Create class
         $scope.joinClass();
         break;
     default:
-        // Create class
         $scope.classroom(true);
     }
+  };
+
+  $scope.createClass = function () {
+    var classes = $firebaseArray(root.child("Classes"));
+    classes.$add({
+      "Pub" : {
+        "CurrentLesson" : null,
+        "CurrentTopic" : null,
+        "Name" : $scope.invitecode,
+        "Teacher" : $scope.userData.uid
+      },
+      "Lessons" : null
+    }).then(function (newRef) {
+      var user = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Teaches").child(newRef.key()));
+      user.$loaded(function () {
+          if (user.$value == null) {
+            user.$value = Date();
+            user.$save();
+          }
+          $location.path('/dashboard:' + newRef.key());
+      });
+    });
   };
 
   $scope.joinClass = function () {
     if ($scope.invitecode != "" && $scope.invitecode.length > 3) {
       var joiner = $firebaseObject(root.child("Joiners").child($scope.invitecode));
       joiner.$loaded(function () {
-        console.log(joiner);
         if (joiner != null && joiner != undefined) {
-          // Check if user partakes in class - if not add it
-          var user = $firebaseArray(root.child("Users").child($scope.userData.uid).child("Partakes"));
-          console.log(user);
+          // Check if user partakes or teaches class - if not add it
+          var user = $firebaseObject(root.child("Users").child($scope.userData.uid));
           user.$loaded(function () {
-            if (user.Partakes != undefined) {
-              var found = false;
-              angular.forEach(user.Partakes, function (partake) {
-                if (partake == joiner.Class) {
-                  found = true;
-                }
-              });
-              if (!found) {
-                user.$add(joiner.Class);
+              if (user.Partakes == undefined)
+                user.Partakes = {};
+              if (user.Partakes[joiner.Class] == undefined) {
+                user.Partakes[joiner.Class] = Date();
+                user.$save();
               }
-            }
+              if (user.Teaches != undefined && user.Teaches[joiner.Class] != undefined) {
+                $location.path('/dashboard:' + joiner.Class);
+              } else {
+                $location.path('/class:' + joiner.Class);
+              }
           });
-          console.log(joiner);
-          $location.path('/class:' + joiner.Class);
-          console.log(joiner.Class);
         }
       });
     }

@@ -2,9 +2,9 @@
   header
     h1 Interactive Classroom
     .homebtngrp(ng-class="btngrpclass")
-      button(ng-click="classroom(false)").homebtngrp-left
-      input(type="Text", ng-model="invitecode").homebtngrp-left-input
+      button(class="btn", ng-click="classroom(false)").homebtngrp-left
+      input(type="Text", ng-model="invitecode", my-enter="secondary()").homebtngrp-left-input
       label.homebtngrp-left-input-label {{labeltext}}&nbsp;
         a(href="", ng-click="cancel()") close
-      button(ng-click="secondary()").open.homebtngrp-right
+      button(class="btn",ng-click="secondary()").open.homebtngrp-right
   include ../svg/happyFace.svg

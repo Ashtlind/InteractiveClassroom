@@ -70,45 +70,46 @@ h1, h2, h3, h4
 			@include heading-size(1 * $value)
 
 .material-icons
-    font-family: 'Material Icons'
-    font-weight: normal
-    font-style: normal
-    font-size: inherit
-    line-height: inherit
-    position: absolute
-    display: inline-block
-    width: 100%
-    height: 1em
-    line-height: 1
-    text-transform: none
-    letter-spacing: normal
-    word-wrap: normal
-    white-space: nowrap
-    direction: ltr
-    -webkit-font-smoothing: antialiased
-    text-rendering: optimizeLegibility
-    -moz-osx-font-smoothing: grayscale
-    font-feature-settings: 'liga'
-    box-sizing: border-box
+		font-family: 'Material Icons'
+		font-weight: normal
+		font-style: normal
+		font-size: inherit
+		line-height: inherit
+		position: absolute
+		display: inline-block
+		width: 100%
+		height: 1em
+		line-height: 1
+		text-transform: none
+		letter-spacing: normal
+		word-wrap: normal
+		white-space: nowrap
+		direction: ltr
+		-webkit-font-smoothing: antialiased
+		text-rendering: optimizeLegibility
+		-moz-osx-font-smoothing: grayscale
+		font-feature-settings: 'liga'
+		box-sizing: border-box
 
 button
-	margin-bottom: 5px
-	margin-left: 5px
-	background-color: $dark
-	font-weight: bold
-	cursor: pointer
-	color: $light
-	text-transform: uppercase
-	border: solid $border-width $dark
-	border-radius: $border-radius
-	padding: 0.8rem 1.2rem
-	transition: all 0.2s ease-in-out
+	&.btn
+		margin-bottom: 5px
+		margin-left: 5px
+		background-color: $dark
+		font-weight: bold
+		cursor: pointer
+		color: $light
+		text-transform: uppercase
+		border: solid $border-width $dark
+		border-radius: $border-radius
+		padding: 0.8rem 1.2rem
+		transition: all 0.2s ease-in-out
+		&:hover
+			box-shadow: 0.3rem 0.3rem 1rem 0 rgba(0,0,0,0.3)
+		&:active
+			box-shadow: none
 	outline: none
 	appearance: none
-	&:hover
-		box-shadow: 0.3rem 0.3rem 1rem 0 rgba(0,0,0,0.3)
-	&:active
-		box-shadow: none
 	&.open
 		background-color: $yellow
 		color: $dark
@@ -130,6 +131,60 @@ button
 	&.blue:hover
 		color: #FFFFFF
 		background-color: $light-blue
+
+.nav
+	z-index: 10
+	position: absolute
+	display: flex
+	width: 100%
+	&.navexpanddisplace + .maincontainer
+		padding-top: 4rem
+.navitems
+	position: absolute
+	transition: max-height 1s cubic-bezier(0.42, 0, 0.22, 1.18)
+	max-height: 0
+	top: 0
+	left: 0
+	margin-left: 70px
+	width: 100%
+	background-color: rgba(0,0,0,0.05)
+	border-bottom-left-radius: $border-radius
+	display: flex
+	flex-wrap: wrap
+	padding: 0 0.8rem
+	&.navexpand
+		max-height: 40rem
+		padding: 0.5rem 0.8rem
+	&.navexpand + .hamburger > .hamburger-box > .hamburger-inner
+		color: $light
+	.navitem
+		background-color: $dark
+		overflow: hidden
+		height: 2rem
+		padding: 0 2rem
+		margin: 0.5rem
+		line-height: 2rem
+		font-size: 1rem
+		text-align: center
+		border-radius: 1.5rem
+		color: $light
+		cursor: pointer
+		&.ng-enter-stagger,
+		&.ng-move-stagger
+			transition-delay: 0.1s
+		&.ng-enter,
+		&.ng-leave,
+		&.ng-move
+			transition: all 0.2s ease-in-out
+		&.ng-leave.ng-leave-active,
+		&.ng-enter,
+		&.ng-move
+			transition: all 0.2s ease-in-out
+			opacity: 0
+		&.ng-leave,
+		&.ng-move.ng-move-active,
+		&.ng-enter.ng-enter-active
+			opacity: 1
 
 .homebtngrp
 	display: flex
@@ -241,6 +296,10 @@ select
 	width: 100%
 	height: 100%
 	margin: 0
+	overflow: hidden
+	padding-top: 0
+	transition: padding-top 0.3s cubic-bezier(0.42, 0, 0.22, 1.18)
+
 
 .fullpagecentercont
 	position: relative
@@ -502,3 +561,5 @@ select
 
 .inline
 	display: inline
+
+@import "hamburgers/hamburgers.scss"

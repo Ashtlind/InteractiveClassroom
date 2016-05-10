@@ -13,6 +13,10 @@
     <script src="/scripts/app-dist.js"></script>
   </head>
   <body>
+    <div ng-controller="Nav" ng-class="{'navexpanddisplace' : nav}" class="nav">
+      <div ng-class="{'navexpand' : nav}" ng-show="nav" class="navitems"><a ng-repeat="item in items track by $index" href="{{item.link}}" class="repeat-animation navitem">{{item.name}}</a></div>
+      <button ng-click="toggle()" ng-class="{'is-active' : nav}" class="hamburger hamburger--elastic"><span class="hamburger-box"><span class="hamburger-inner"></span></span></button>
+    </div>
     <div ng-view="ng-view" class="maincontainer"></div>
   </body>
 </html>

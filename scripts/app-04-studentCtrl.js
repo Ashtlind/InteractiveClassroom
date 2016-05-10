@@ -11,6 +11,8 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
 
     $scope.currentAnswer = {};
 
+    var heartbeatIntervalPromise = {};
+
     $scope.classInfo.$loaded(function () {
       var lessonRef = classRef.child("Lessons").child($scope.classInfo.CurrentLesson);
       Auth.$requireAuth().then(function () {
@@ -19,7 +21,7 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
         // Setup a heartbeat loop
         $scope.myHeartbeat.$value = Date();
         $scope.myHeartbeat.$save();
-        $interval(function () {
+        heartbeatIntervalPromise = $interval(function () {
           $scope.myHeartbeat.$value = Date();
           $scope.myHeartbeat.$save();
         }, 30000);
@@ -28,6 +30,8 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
         $scope.currentAnswer = $firebaseObject(topicAnswer);
       });
     });
+
+    $scope.$on('$destroy', function () { $interval.cancel(heartbeatIntervalPromise); });
 
     $scope.answer = function (answer) {
       $scope.currentAnswer.Answer = answer;

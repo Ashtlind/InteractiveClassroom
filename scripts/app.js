@@ -3,3 +3,4 @@
 //@prepros-append app-03-homeCtrl.js
 //@prepros-append app-04-studentCtrl.js
 //@prepros-append app-05-teacherCtrl.js
+//@prepros-append app-06-navCtrl.js

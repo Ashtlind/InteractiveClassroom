@@ -114,6 +114,13 @@ aside h6 {
 }
 
 button {
+  outline: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+
+button.btn {
   margin-bottom: 5px;
   margin-left: 5px;
   background-color: #363842;
@@ -125,17 +132,13 @@ button {
   border-radius: 0.4rem;
   padding: 0.8rem 1.2rem;
   transition: all 0.2s ease-in-out;
-  outline: none;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
 }
 
-button:hover {
+button.btn:hover {
   box-shadow: 0.3rem 0.3rem 1rem 0 rgba(0, 0, 0, 0.3);
 }
 
-button:active {
+button.btn:active {
   box-shadow: none;
 }
 
@@ -172,6 +175,78 @@ button.blue:focus {
 button.blue:hover {
   color: #FFFFFF;
   background-color: #448BC9;
+}
+
+.nav {
+  z-index: 10;
+  position: absolute;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+
+.nav.navexpanddisplace + .maincontainer {
+  padding-top: 4rem;
+}
+
+.navitems {
+  position: absolute;
+  transition: max-height 1s cubic-bezier(0.42, 0, 0.22, 1.18);
+  max-height: 0;
+  top: 0;
+  left: 0;
+  margin-left: 70px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 0.4rem;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+  padding: 0 0.8rem;
+}
+
+.navitems.navexpand {
+  max-height: 40rem;
+  padding: 0.5rem 0.8rem;
+}
+
+.navitems.navexpand + .hamburger > .hamburger-box > .hamburger-inner {
+  color: #ffffff;
+}
+
+.navitems .navitem {
+  background-color: #363842;
+  overflow: hidden;
+  height: 2rem;
+  padding: 0 2rem;
+  margin: 0.5rem;
+  line-height: 2rem;
+  font-size: 1rem;
+  text-align: center;
+  border-radius: 1.5rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.navitems .navitem.ng-enter-stagger, .navitems .navitem.ng-move-stagger {
+  transition-delay: 0.1s;
+}
+
+.navitems .navitem.ng-enter, .navitems .navitem.ng-leave, .navitems .navitem.ng-move {
+  transition: all 0.2s ease-in-out;
+}
+
+.navitems .navitem.ng-leave.ng-leave-active, .navitems .navitem.ng-enter, .navitems .navitem.ng-move {
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.navitems .navitem.ng-leave, .navitems .navitem.ng-move.ng-move-active, .navitems .navitem.ng-enter.ng-enter-active {
+  opacity: 1;
 }
 
 .homebtngrp {
@@ -323,6 +398,9 @@ select option {
   width: 100%;
   height: 100%;
   margin: 0;
+  overflow: hidden;
+  padding-top: 0;
+  transition: padding-top 0.3s cubic-bezier(0.42, 0, 0.22, 1.18);
 }
 
 .fullpagecentercont {
@@ -759,4 +837,110 @@ select option {
 
 .inline {
   display: inline;
+}
+
+/*!
+ * Hamburgers
+ * @description Tasty CSS-animated hamburgers
+ * @author Jonathan Suh @jonsuh
+ * @site https://jonsuh.com/hamburgers
+ * @link https://github.com/jonsuh/hamburgers
+ */
+.hamburger {
+  padding: 15px 15px;
+  display: inline-block;
+  cursor: pointer;
+  transition-property: opacity, -webkit-filter;
+  transition-property: opacity, filter;
+  transition-property: opacity, filter, -webkit-filter;
+  transition-duration: 0.15s;
+  transition-timing-function: linear;
+  font: inherit;
+  color: inherit;
+  text-transform: none;
+  background-color: transparent;
+  border: 0;
+  margin: 0;
+  overflow: visible;
+}
+
+.hamburger:hover {
+  opacity: 0.7;
+}
+
+.hamburger-box {
+  width: 40px;
+  height: 24px;
+  display: inline-block;
+  position: relative;
+}
+
+.hamburger-inner {
+  display: block;
+  top: 50%;
+  margin-top: -2px;
+}
+
+.hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
+  width: 40px;
+  height: 4px;
+  background-color: #363842;
+  border-radius: 4px;
+  position: absolute;
+  transition-property: -webkit-transform;
+  transition-property: transform;
+  transition-property: transform, -webkit-transform;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+.hamburger-inner::before, .hamburger-inner::after {
+  content: "";
+  display: block;
+}
+
+.hamburger-inner::before {
+  top: -10px;
+}
+
+.hamburger-inner::after {
+  bottom: -10px;
+}
+
+/*
+   * Elastic
+   */
+.hamburger--elastic .hamburger-inner {
+  top: 2px;
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hamburger--elastic .hamburger-inner::before {
+  top: 10px;
+  transition: opacity 0.15s 0.4s ease;
+}
+
+.hamburger--elastic .hamburger-inner::after {
+  top: 20px;
+  transition: -webkit-transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), -webkit-transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.hamburger--elastic.is-active .hamburger-inner {
+  -webkit-transform: translate3d(0, 10px, 0) rotate(135deg);
+          transform: translate3d(0, 10px, 0) rotate(135deg);
+  transition-delay: 0.1s;
+}
+
+.hamburger--elastic.is-active .hamburger-inner::before {
+  transition-delay: 0s;
+  opacity: 0;
+}
+
+.hamburger--elastic.is-active .hamburger-inner::after {
+  -webkit-transform: translate3d(0, -20px, 0) rotate(-270deg);
+          transform: translate3d(0, -20px, 0) rotate(-270deg);
+  transition-delay: 0.1s;
 }

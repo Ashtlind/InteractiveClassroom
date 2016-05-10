@@ -1,21 +1,13 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', function ($scope, $firebaseObject, $firebaseArray) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', 'Auth', function ($scope, $firebaseObject, $firebaseArray, $routeParams, Auth) {
+    $scope.classid = $routeParams.classid.substring(1);
 
-    // This will be set from synergetic current class code:
-    // ***
-    $scope.clas = "MAT0813_23C";
-    // ***
+    var authData = Auth.$getAuth();
 
-    $scope.fbRefClass = "https://huehue.firebaseio.com/Classes/" + $scope.clas;
+    var classRef = new Firebase("https://interactiveclassroom.firebaseio.com/Classes/" + $scope.classid);
 
-    $scope.stuCount = 24;
-    $scope.lampSel = {};
-
-    $scope.CurrentSession = {};
-
-    // Get current session and settings from class and lesson
-    var settingsRef = new Firebase($scope.fbRefClass + "/Settings");
-    $scope.Settings = $firebaseObject(settingsRef);
-
+    // Get class info
+    var classInfoRef = classRef.child("/Pub");
+    $scope.classInfo = $firebaseObject(classInfoRef);
 
     // Get lamp list
     var lampsRef = new Firebase("https://huehue.firebaseio.com/Hue/Lamps");
@@ -24,43 +16,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
 
     });
 
-    // If there is no class settings, allow for creating new lesson with will populate this
-    $scope.Settings.$loaded(function () {
-        if ($scope.Settings.CurrentSession == undefined) {
-            $scope.Settings.CurrentLesson = "";
-        }
+    $scope.Lesson = {};
+    $scope.Topic = {};
 
-        if ($scope.Settings.CurrentLesson != "" && $scope.Settings.CurrentLesson != undefined) {
-            if ($scope.Settings.Lamp != undefined) {
-                angular.forEach($scope.Lamps, function(lamp, key) {
-                    if (key == $scope.Settings.Lamp) {
-                        $scope.lampSel = lamp;
-                    }
-                });
-
-                console.log($scope.lampSel);
-            }
-        }
-    });
-
-    // Session Changed in settings - Update the current session and values
-    $scope.$watch('Settings.CurrentSession', function (newVal, oldVal) {
-        if (newVal != "" && newVal != undefined) {
-            console.log("NEW Session!");
-            var sessionRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions/" + $scope.Settings.CurrentSession);
-            $scope.CurrentSession = $firebaseObject(sessionRef);
-
-            $scope.CurrentSession.$loaded(function () {
-                console.log($scope.CurrentSession);
-
-                if ($scope.CurrentSession.StudentCount != undefined) {
-                    $scope.stuCount = $scope.CurrentSession.StudentCount;
-                } else {
-                    $scope.stuCount = 24;
-                }
-
-            });
-        }
+    $scope.$watch('classInfo', function (newVal, oldVal){
+      if (newVal.CurrentLesson != undefined && newVal.CurrentLesson != oldVal.CurrentLesson) {
+        $scope.Lesson = $firebaseObject(classInfoRef.child("Lessons").child(newVal.CurrentLesson));
+      }
+      if (newVal.CurrentTopic != undefined && newVal.CurrentTopic != oldVal.CurrentTopic) {
+        $scope.Lesson = $firebaseObject(classInfoRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
+      }
     });
 
     $scope.pluralsAreGoodIGuess = function (numb){
@@ -79,26 +44,14 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
 
     });
 
-
-    $scope.stuCountChange = function (keyEvent) {
-        if (keyEvent.which === 13 && $scope.stuCount > 0) {
-            var lessonRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson);
-            var sessionRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions/" + $scope.Settings.CurrentSession);
-
-            lessonRef.update({ 'StudentCount': $scope.stuCount });
-            sessionRef.update({ 'StudentCount': $scope.stuCount });
-        }
-    };
-
-
     $scope.createNewLesson = function() {
 
         // Create lesson with a new session
         var newLessonRef = new Firebase($scope.fbRefClass + "/Lessons");
 
-        var les = {
+        var lesson = {
             'Date': Date(),
-            'StudentCount': $scope.stuCount
+            'Students': null
         };
         var theNewLesson = newLessonRef.push(les);
 
