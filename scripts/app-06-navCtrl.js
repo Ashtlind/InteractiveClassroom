@@ -6,23 +6,28 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   $scope.userData = {};
 
   Auth.$onAuth(function (authData) {
-    $scope.userData = $firebaseObject(root.child("Users").child(authData.uid));
-    $scope.userData.$loaded(function () {
-      $scope.userData.uid = authData.uid;
-      $scope.userData.email = authData.google.email;
-      $scope.userData.name = authData.google.displayName;
-      $scope.userData.profileImageURL = authData.google.profileImageURL;
-      $scope.userData.LastLogin = Date();
-      userData.$save().then(function () {
-        // Tell the home controller what's up
-        $rootScope.$broadcast('userGuidHome', $scope.userData);
-      });
-    });
+    if (authData != null) {
+      console.log(authData);
+      $scope.userData = $firebaseObject(root.child("Users").child(authData.uid));
+        $scope.userData.$loaded(function () {
+          $scope.userData.uid = authData.uid;
+          $scope.userData.email = authData.google.email;
+          $scope.userData.name = authData.google.displayName;
+          $scope.userData.profileImageURL = authData.google.profileImageURL;
+          $scope.userData.LastLogin = Date();
+          $scope.userData.$save().then(function () {
+            // Tell the Controllers what's up
+            $rootScope.$broadcast('userGuid', $scope.userData.uid);
+          });
+        });
+      } else {
+        $rootScope.$broadcast('userGuid', undefined);
+      }
   });
 
   // Controllers will ask for the authed user's guid - Send it back!
-  $scope.$on('userGuidReq', function (event, sender) {
-    $rootScope.$broadcast('userGuid' + sender, $scope.userData);
+  $scope.$on('userGuidReq', function (event) {
+      $rootScope.$broadcast('userGuid', $scope.userData.uid);
   });
 
   $scope.$on('login', function () {
@@ -34,9 +39,13 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
           // Handled in $onAuth event
         });
       } else {
-        $rootScope.$broadcast('authed', false, $scope.userData);
+        $rootScope.$broadcast('userGuidHome', null);
       }
     });
+  });
+
+  $scope.$on('logout', function () {
+    Auth.$unauth();
   });
 
   // Start the first authentication request if none have been made - In case the user has already logged in
@@ -47,8 +56,16 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   // ***
 
   $scope.nav = false;
-
-  $scope.navitems = new Array();
+  // Defaults
+  $scope.navitems = new Array(
+    {"icon" : "replay",
+    "name" : "Home",
+    "link" : "#/"},
+    {"icon" : "highlight_off",
+    "name" : "Log out",
+    "link" : "#/:logout"}
+  );
+  console.log($scope.navitems);
   $scope.items = [];
 
   $scope.$watch('userData.Partakes', function (newVal, oldVal) {
@@ -57,8 +74,9 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
         var className = $firebaseObject(root.child("Classes").child(key).child("Pub").child("Name"));
         className.$loaded(function () {
           $scope.navitems.push({
-            "name" : "S - " + className.$value,
-            "link" : "class:" + key
+            "icon" : "face",
+            "name" : className.$value,
+            "link" : "#/class:" + key
           });
         });
       });
@@ -71,8 +89,9 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
         var className = $firebaseObject(root.child("Classes").child(key).child("Pub").child("Name"));
         className.$loaded(function () {
           $scope.navitems.push({
-            "name" : "T - " + className.$value,
-            "link" : "dashboard:" + key
+            "icon" : "stars",
+            "name" : className.$value,
+            "link" : "#/dashboard:" + key
           });
         });
       });

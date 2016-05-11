@@ -1,11 +1,11 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', function ($scope, $firebaseObject, $firebaseArray, $routeParams) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope) {
     var root = new Firebase("https://interactiveclassroom.firebaseio.com");
 
     $scope.classid = $routeParams.classid.substring(1);
 
     // Get the user's guid initially and subscribe to changes
-    $rootScope.$broadcast('userGuidReq', 'Teacher');
-    $scope.$on('userGuidTeacher', function (event, guid) {
+    $rootScope.$broadcast('userGuidReq');
+    $scope.$on('userGuid', function (event, guid) {
       if (guid == undefined || guid == null)
         $scope.userData = {};
       else

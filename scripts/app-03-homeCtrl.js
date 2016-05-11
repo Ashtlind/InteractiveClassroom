@@ -1,5 +1,15 @@
-angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location) {
+angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams) {
   var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+
+  // Route action - if any
+  if ($routeParams.action != undefined){
+    var action = $routeParams.action.substring(1);
+    switch(action) {
+    case "logout":
+        $rootScope.$broadcast('logout');
+        break;
+    }
+  }
 
   $scope.btngrpclass = "";
   $scope.invitecode = "";
@@ -8,34 +18,40 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
   $scope.joinBtn = false;
 
   // Get the user's guid initially and subscribe to changes
-  $rootScope.$broadcast('userGuidReq', 'Home');
-  $scope.$on('userGuidHome', function (event, guid) {
+  // More complex due to allowing anonymous users only on the home page
+  $scope.userData = {};
+  $rootScope.$broadcast('userGuidReq');
+  $scope.$on('userGuid', function (event, guid) {
+    console.log(guid);
     if (guid == undefined || guid == null){
       $scope.userData = {};
+      $scope.cancel();
     } else {
       // That means we are authenticated
       $scope.userData = $firebaseObject(root.child("Users").child(guid));
       $scope.userData.$loaded(function () {
-        if ($scope.joinBtn){
+        if ($scope.joinBtn) {
           // If we had pressed a call to action and now authenticated - continue
           $scope.btngrpclass = "homebtngrp--loggedin";
-          $scope.invitecode = "Welcome " + userData.name.split(" ")[0] + "!";
+          $scope.invitecode = "Welcome " + $scope.userData.name.split(" ")[0] + "!";
           $timeout(function () {
             $scope.invitecode = "";
-            $scope.labeltext = $scope.labelText(addnew);
+            $scope.labeltext = $scope.labelText();
             $scope.btngrpclass = "homebtngrp--invitecode";
-            setTimeout(function() {
-              $('.homebtngrp-left-input').focus();
-            }, 500);
+              setTimeout(function() {
+                $('.homebtngrp-left-input').focus();
+              }, 500);
             }, 2000);
           } else {
             $scope.cancel();
           }
-        }
       });
     }
   });
 
+
+
+  // Revert defaults - mainly for the main call to action buttons
   $scope.cancel = function (){
     $scope.btngrpclass = "";
     $scope.invitecode = "";
@@ -43,13 +59,16 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     $scope.joinBtn = false;
   };
 
+  // Start the ball rolling from the main "Join a classrroom" call to action
   $scope.classroom = function (addnew) {
       $scope.addingClass = addnew;
     if ($scope.userData.uid == undefined) {
+        // We need to authenticate the user
         $scope.btngrpclass = "homebtngrp--login";
         $scope.joinBtn = true;
         $rootScope.$broadcast('login');
     } else {
+      // We have a firebase guid - we are authenticated
       $scope.labeltext = $scope.labelText();
       $scope.btngrpclass = "homebtngrp--invitecode";
       setTimeout(function() {
@@ -58,6 +77,7 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     }
   };
 
+  // Textinput helper text for primary call to action
   $scope.labelText = function () {
     if ($scope.addingClass) {
       return "Name your new class.";
@@ -70,7 +90,7 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     switch($scope.btngrpclass) {
     case "homebtngrp--login":
         // Retry login - then go to class or ask to create
-        $scope.login();
+        $rootScope.$broadcast('login');
         break;
     case "homebtngrp--loggedin":
         // Nothing
@@ -87,6 +107,7 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     }
   };
 
+  // Create from invite text field
   $scope.createClass = function () {
     var classes = $firebaseArray(root.child("Classes"));
     classes.$add({
@@ -98,37 +119,31 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
       },
       "Lessons" : null
     }).then(function (newRef) {
-      var user = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Teaches").child(newRef.key()));
-      user.$loaded(function () {
-          if (user.$value == null) {
-            user.$value = Date();
-            user.$save();
-          }
-          $location.path('/dashboard:' + newRef.key());
-      });
+      if ($scope.userData.Teaches[newRef.key()] == undefined && $scope.userData.Teaches[newRef.key()] != null) {
+        $scope.userData.Teaches[newRef.key()] = Date();
+        $scope.userData.$save();
+      }
+      $location.path('/dashboard:' + newRef.key());
     });
   };
-
+  // Join from invite text field
   $scope.joinClass = function () {
     if ($scope.invitecode != "" && $scope.invitecode.length > 3) {
       var joiner = $firebaseObject(root.child("Joiners").child($scope.invitecode));
       joiner.$loaded(function () {
         if (joiner != null && joiner != undefined) {
           // Check if user partakes or teaches class - if not add it
-          var user = $firebaseObject(root.child("Users").child($scope.userData.uid));
-          user.$loaded(function () {
-              if (user.Partakes == undefined)
-                user.Partakes = {};
-              if (user.Partakes[joiner.Class] == undefined) {
-                user.Partakes[joiner.Class] = Date();
-                user.$save();
-              }
-              if (user.Teaches != undefined && user.Teaches[joiner.Class] != undefined) {
-                $location.path('/dashboard:' + joiner.Class);
-              } else {
-                $location.path('/class:' + joiner.Class);
-              }
-          });
+          if ($scope.userData.Partakes == undefined)
+            $scope.userData.Partakes = {};
+          if ($scope.userData.Partakes[joiner.Class] == undefined) {
+            $scope.userData.Partakes[joiner.Class] = Date();
+            $scope.userData.$save();
+          }
+          if ($scope.userData.Teaches != undefined && $scope.userData.Teaches[joiner.Class] != undefined) {
+            $location.path('/dashboard:' + joiner.Class);
+          } else {
+            $location.path('/class:' + joiner.Class);
+          }
         }
       });
     }

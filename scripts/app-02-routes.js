@@ -38,6 +38,9 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
   }).when('/', {
     templateUrl : 'home.html',
     controller  : 'Home'
+  }).when('/:action', {
+    templateUrl : 'home.html',
+    controller  : 'Home'
   }).otherwise({
     redirectTo: '/'
   });
