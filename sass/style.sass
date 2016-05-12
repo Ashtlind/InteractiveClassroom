@@ -145,58 +145,62 @@ button
 	max-height: 0
 	top: 0
 	left: 0
-	margin-left: 5.5rem
 	width: 100%
-	background-color: rgba(0,0,0,0.05)
+	background-color: rgba(0,0,0,0.1)
 	border-bottom: none
 	display: flex
 	flex-wrap: wrap
 	padding: 0 0.8rem
+	padding-left: 5.5rem
+	display: none
 	&.navexpand
+		display: block
 		max-height: 40rem
 		padding: 0.75rem 0.8rem
+		padding-left: 5.5rem
 		border-bottom: solid 0.3rem $dark
 	&.navexpand + .hamburger > .hamburger-box > .hamburger-inner
 		color: $light
-	.navitem
-		background-color: $dark
-		overflow: hidden
-		height: 2rem
-		padding: 0 2rem
-		padding-left: 3rem
-		margin: 0.5rem
+.navitem
+	background-color: $dark
+	overflow: hidden
+	height: 2rem
+	display: inline-block
+	padding: 0 2rem
+	padding-left: 3rem
+	margin: 0.5rem
+	line-height: 2rem
+	font-size: 1rem
+	text-align: center
+	border-radius: 1.5rem
+	color: $light
+	cursor: pointer
+	position: relative
+	text-decoration: none
+	&::before
+		@extend .material-icons
+		content: attr(icon)
+		left: 0
+		top: 0
+		text-align: left
 		line-height: 2rem
-		font-size: 1rem
-		text-align: center
-		border-radius: 1.5rem
-		color: $light
-		cursor: pointer
-		position: relative
-		text-decoration: none
-		&::before
-			@extend .material-icons
-			content: attr(icon)
-			left: 0
-			top: 0
-			text-align: left
-			line-height: 2rem
-			font-size: 2rem
-		&.ng-enter-stagger,
-		&.ng-move-stagger
-			transition-delay: 0.1s
-		&.ng-enter,
-		&.ng-leave,
-		&.ng-move
-			transition: all 0.2s ease-in-out
-		&.ng-leave.ng-leave-active,
-		&.ng-enter,
-		&.ng-move
-			transition: all 0.2s ease-in-out
-			opacity: 0
-		&.ng-leave,
-		&.ng-move.ng-move-active,
-		&.ng-enter.ng-enter-active
-			opacity: 1
+		font-size: 2rem
+	&.ng-enter-stagger,
+	&.ng-move-stagger
+		transition-delay: 0.1s
+	&.ng-enter,
+	&.ng-leave,
+	&.ng-move
+		transition: all 0.2s ease-in-out
+	&.ng-leave.ng-leave-active,
+	&.ng-enter,
+	&.ng-move
+		transition: all 0.2s ease-in-out
+		opacity: 0
+	&.ng-leave,
+	&.ng-move.ng-move-active,
+	&.ng-enter.ng-enter-active
+		opacity: 1
 
 .homebtngrp
 	display: flex

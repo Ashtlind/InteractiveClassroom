@@ -1,8 +1,8 @@
 extends _layout.jade
 block content
-  div.nav(ng-controller="Nav", ng-class="{'navexpanddisplace' : nav}")
-    .navitems(ng-class="{'navexpand' : nav}", ng-show="nav")
-      a(ng-repeat="item in items track by $index", class="repeat-animation", href="{{item.link}}", icon="{{item.icon}}").navitem {{item.name}}
+  div.nav(ng-controller="Nav", ng-class="{'navexpanddisplace' : nav}", ng-show="showNav()")
+    .navitems(ng-class="{'navexpand' : nav}")
+      a(ng-repeat="item in items track by $index", class="repeat-animation", href="{{item.link}}", icon="{{item.icon}}").navitem {{item.fb.Name}}
     button(class="hamburger hamburger--elastic", ng-click="toggle()", ng-class="{'is-active' : nav}")
       span(class="hamburger-box")
         span(class="hamburger-inner")

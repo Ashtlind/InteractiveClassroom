@@ -1,4 +1,4 @@
-angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope) {
+angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar) {
     var root = new Firebase("https://interactiveclassroom.firebaseio.com");
     $scope.classid = $routeParams.classid.substring(1);
 
@@ -7,9 +7,8 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
     var heartbeatIntervalPromise = {};
 
     // Get the user's guid initially and subscribe to changes
-    $rootScope.$broadcast('userGuidReq');
+    cfpLoadingBar.start();
     $scope.$on('userGuid', function (event, guid) {
-      console.log(guid);
       if (guid == undefined || guid == null) {
         $scope.userData = {};
       } else {
@@ -27,11 +26,12 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
               $scope.myHeartbeat.$save();
             }, 30000);
             $scope.currentAnswer = $firebaseObject(lessonRef.child("Topics").child($scope.classInfo.CurrentTopic).child("Answers").child($scope.userData.uid));
+            cfpLoadingBar.complete();
           });
         });
       }
     });
-
+    $rootScope.$broadcast('userGuidReq');
 
     $scope.$on('$destroy', function () { $interval.cancel(heartbeatIntervalPromise); });
 

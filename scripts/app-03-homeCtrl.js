@@ -1,4 +1,4 @@
-angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams) {
+angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams, cfpLoadingBar) {
   var root = new Firebase("https://interactiveclassroom.firebaseio.com");
 
   // Route action - if any
@@ -17,10 +17,18 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
   $scope.addingClass = false;
   $scope.joinBtn = false;
 
+  // Revert defaults - mainly for the main call to action buttons
+  $scope.cancel = function () {
+    $scope.btngrpclass = "";
+    $scope.invitecode = "";
+    $scope.addingClass = false;
+    $scope.joinBtn = false;
+  };
+
   // Get the user's guid initially and subscribe to changes
   // More complex due to allowing anonymous users only on the home page
   $scope.userData = {};
-  $rootScope.$broadcast('userGuidReq');
+  cfpLoadingBar.start();
   $scope.$on('userGuid', function (event, guid) {
     console.log(guid);
     if (guid == undefined || guid == null){
@@ -45,19 +53,11 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
           } else {
             $scope.cancel();
           }
+          cfpLoadingBar.complete();
       });
     }
   });
-
-
-
-  // Revert defaults - mainly for the main call to action buttons
-  $scope.cancel = function (){
-    $scope.btngrpclass = "";
-    $scope.invitecode = "";
-    $scope.addingClass = false;
-    $scope.joinBtn = false;
-  };
+  $rootScope.$broadcast('userGuidReq');
 
   // Start the ball rolling from the main "Join a classrroom" call to action
   $scope.classroom = function (addnew) {

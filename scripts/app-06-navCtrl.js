@@ -3,31 +3,40 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   // ***
   // User Authentication
-  $scope.userData = {};
+  $rootScope.userData = {};
 
   Auth.$onAuth(function (authData) {
     if (authData != null) {
       console.log(authData);
-      $scope.userData = $firebaseObject(root.child("Users").child(authData.uid));
-        $scope.userData.$loaded(function () {
-          $scope.userData.uid = authData.uid;
-          $scope.userData.email = authData.google.email;
-          $scope.userData.name = authData.google.displayName;
-          $scope.userData.profileImageURL = authData.google.profileImageURL;
-          $scope.userData.LastLogin = Date();
-          $scope.userData.$save().then(function () {
+      $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid));
+        $rootScope.userData.$loaded(function () {
+          $rootScope.userData.uid = authData.uid;
+          $rootScope.userData.email = authData.google.email;
+          $rootScope.userData.name = authData.google.displayName;
+          $rootScope.userData.profileImageURL = authData.google.profileImageURL;
+          $rootScope.userData.LastLogin = Date();
+          $rootScope.userData.$save().then(function () {
             // Tell the Controllers what's up
-            $rootScope.$broadcast('userGuid', $scope.userData.uid);
+            $rootScope.$broadcast('userGuid', $rootScope.userData.uid);
           });
         });
       } else {
+        $rootScope.userData = {};
         $rootScope.$broadcast('userGuid', undefined);
       }
   });
 
   // Controllers will ask for the authed user's guid - Send it back!
   $scope.$on('userGuidReq', function (event) {
-      $rootScope.$broadcast('userGuid', $scope.userData.uid);
+      console.log("ASKING!");
+      console.log("nav: " + $rootScope.userData.uid);
+      $rootScope.$broadcast('userGuid', $rootScope.userData.uid);
+  });
+
+  $scope.$watch('userData.uid', function (n, o) {
+    if (n == undefined)
+      Auth.$getAuth();
+    console.log("watch: " + n);
   });
 
   $scope.$on('login', function () {
@@ -49,60 +58,105 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   });
 
   // Start the first authentication request if none have been made - In case the user has already logged in
-  if ($scope.userData == {})
-    Auth.$getAuth();
+
 
   // End User Authentication
   // ***
 
   $scope.nav = false;
-  // Defaults
-  $scope.navitems = new Array(
-    {"icon" : "replay",
-    "name" : "Home",
-    "link" : "#/"},
-    {"icon" : "highlight_off",
-    "name" : "Log out",
-    "link" : "#/:logout"}
+
+  $scope.showNav = function () {
+      if ($rootScope.userData.uid == undefined)
+        return false;
+      return true;
+  }
+
+  // Default nav items
+  $scope.navitemsdef = new Array(
+    {
+      "icon" : "replay",
+      "link" : "#/",
+      "fb" : {
+        "Name" : "Home"
+      }
+    },
+    {
+      "icon" : "highlight_off",
+      "link" : "#/:logout",
+      "fb" : {
+        "Name" : "Log off"
+      }
+    }
   );
-  console.log($scope.navitems);
-  $scope.items = [];
+  // Complete list for the nav
+  $scope.navitems = new Array();
+  // Lists of classes that the user partakes in / teaches
+  $scope.navitemspartakes = new Array();
+  $scope.navitemsteaches = new Array();
+
+  // update the complete list
+  $scope.itemsUpdate = function () {
+    var arrayOfArrays = [$scope.navitemspartakes, $scope.navitemsteaches, $scope.navitemsdef];
+    $scope.navitems = [];
+    angular.forEach(arrayOfArrays, function (array) {
+      angular.forEach(array, function (item){
+        $scope.navitems.push(item);
+      });
+    });
+    if ($scope.nav) {
+      $scope.items = $scope.navitems;
+    }
+  };
 
   $scope.$watch('userData.Partakes', function (newVal, oldVal) {
+    $scope.navitemspartakes = new Array();
     if (newVal != undefined && newVal != null) {
       angular.forEach(newVal, function (partake, key) {
-        var className = $firebaseObject(root.child("Classes").child(key).child("Pub").child("Name"));
-        className.$loaded(function () {
-          $scope.navitems.push({
+        var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
+        theClass.$loaded(function () {
+          var active = false;
+          if (theClass.CurrentLesson != "") {
+            active = true;
+          }
+          $scope.navitemspartakes.push({
             "icon" : "face",
-            "name" : className.$value,
-            "link" : "#/class:" + key
+            "link" : "#/class:" + key,
+            "active" : active,
+            "fb" : theClass
           });
+          $scope.itemsUpdate();
         });
       });
     }
   });
 
   $scope.$watch('userData.Teaches', function (newVal, oldVal) {
+    $scope.navitemsteaches = new Array();
     if (newVal != undefined && newVal != null) {
       angular.forEach(newVal, function (teach, key) {
-        var className = $firebaseObject(root.child("Classes").child(key).child("Pub").child("Name"));
-        className.$loaded(function () {
-          $scope.navitems.push({
+        var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
+        theClass.$loaded(function () {
+          var active = false;
+          if (theClass.CurrentLesson != "") {
+            active = true;
+          }
+          $scope.navitemsteaches.push({
             "icon" : "stars",
-            "name" : className.$value,
-            "link" : "#/dashboard:" + key
+            "link" : "#/dashboard:" + key,
+            "active" : active,
+            "fb" : theClass
           });
+          $scope.itemsUpdate();
         });
       });
     }
   });
 
+  // Toggle the nav
   $scope.toggle = function () {
+    $scope.items = new Array();
     if (!$scope.nav) {
       $scope.items = $scope.navitems;
-    } else {
-      $scope.items = [];
     }
     $scope.nav = !$scope.nav;
   };

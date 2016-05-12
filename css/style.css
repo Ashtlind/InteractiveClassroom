@@ -89,7 +89,7 @@ aside h6 {
   font-size: 0.33em;
 }
 
-.material-icons, .navitems .navitem::before, .homebtngrp .homebtngrp-right::before {
+.material-icons, .navitem::before, .homebtngrp .homebtngrp-right::before {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
@@ -196,9 +196,8 @@ button.blue:hover {
   max-height: 0;
   top: 0;
   left: 0;
-  margin-left: 5.5rem;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.1);
   border-bottom: none;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -207,11 +206,15 @@ button.blue:hover {
       -ms-flex-wrap: wrap;
           flex-wrap: wrap;
   padding: 0 0.8rem;
+  padding-left: 5.5rem;
+  display: none;
 }
 
 .navitems.navexpand {
+  display: block;
   max-height: 40rem;
   padding: 0.75rem 0.8rem;
+  padding-left: 5.5rem;
   border-bottom: solid 0.3rem #363842;
 }
 
@@ -219,10 +222,11 @@ button.blue:hover {
   color: #ffffff;
 }
 
-.navitems .navitem {
+.navitem {
   background-color: #363842;
   overflow: hidden;
   height: 2rem;
+  display: inline-block;
   padding: 0 2rem;
   padding-left: 3rem;
   margin: 0.5rem;
@@ -236,7 +240,7 @@ button.blue:hover {
   text-decoration: none;
 }
 
-.navitems .navitem::before {
+.navitem::before {
   content: attr(icon);
   left: 0;
   top: 0;
@@ -245,20 +249,20 @@ button.blue:hover {
   font-size: 2rem;
 }
 
-.navitems .navitem.ng-enter-stagger, .navitems .navitem.ng-move-stagger {
+.navitem.ng-enter-stagger, .navitem.ng-move-stagger {
   transition-delay: 0.1s;
 }
 
-.navitems .navitem.ng-enter, .navitems .navitem.ng-leave, .navitems .navitem.ng-move {
+.navitem.ng-enter, .navitem.ng-leave, .navitem.ng-move {
   transition: all 0.2s ease-in-out;
 }
 
-.navitems .navitem.ng-leave.ng-leave-active, .navitems .navitem.ng-enter, .navitems .navitem.ng-move {
+.navitem.ng-leave.ng-leave-active, .navitem.ng-enter, .navitem.ng-move {
   transition: all 0.2s ease-in-out;
   opacity: 0;
 }
 
-.navitems .navitem.ng-leave, .navitems .navitem.ng-move.ng-move-active, .navitems .navitem.ng-enter.ng-enter-active {
+.navitem.ng-leave, .navitem.ng-move.ng-move-active, .navitem.ng-enter.ng-enter-active {
   opacity: 1;
 }
 
