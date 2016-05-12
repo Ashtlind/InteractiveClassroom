@@ -30,10 +30,10 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
   $scope.userData = {};
   cfpLoadingBar.start();
   $scope.$on('userGuid', function (event, guid) {
-    console.log(guid);
     if (guid == undefined || guid == null){
       $scope.userData = {};
       $scope.cancel();
+      cfpLoadingBar.complete();
     } else {
       // That means we are authenticated
       $scope.userData = $firebaseObject(root.child("Users").child(guid));

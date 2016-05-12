@@ -28,15 +28,14 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   // Controllers will ask for the authed user's guid - Send it back!
   $scope.$on('userGuidReq', function (event) {
-      console.log("ASKING!");
-      console.log("nav: " + $rootScope.userData.uid);
       $rootScope.$broadcast('userGuid', $rootScope.userData.uid);
   });
 
   $scope.$watch('userData.uid', function (n, o) {
+    // Start the first authentication request if none have been made - In case the user has already logged in
     if (n == undefined)
       Auth.$getAuth();
-    console.log("watch: " + n);
+    console.log("watchauth: " + n);
   });
 
   $scope.$on('login', function () {
@@ -55,11 +54,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   $scope.$on('logout', function () {
     Auth.$unauth();
+    $location.path('/');
   });
-
-  // Start the first authentication request if none have been made - In case the user has already logged in
-
-
   // End User Authentication
   // ***
 
