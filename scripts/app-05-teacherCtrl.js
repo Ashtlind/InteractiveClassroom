@@ -1,7 +1,31 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue) {
     var root = new Firebase("https://interactiveclassroom.firebaseio.com");
 
     $scope.classid = $routeParams.classid.substring(1);
+
+
+    // HUE Experiments
+
+    // Get all lights
+
+    var myHue = hue;
+    myHue.setup({username: "datuserdoe", bridgeIP: "172.16.10.76", debug: true});
+
+    // Create username
+    var username = myHue.createUser({devicetype: "interactiveclassroom#amdevice"});
+    console.log(username);
+
+    myHue.getLights().then(function(lights) {
+      $scope.lights = lights;
+
+      // Switch light 1 on
+      myHue.setLightState(1, {"on": true}).then(function(response) {
+        $scope.lights[1].state.on = false;
+        console.log('API response: ', response);
+      });
+    });
+
+
 
     // Get the user's guid initially and subscribe to changes
     $rootScope.$broadcast('userGuidReq');

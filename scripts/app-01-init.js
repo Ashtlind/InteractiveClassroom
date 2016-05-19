@@ -10,7 +10,7 @@ $(document).ready(function () {
 
 
 // Angular app
-var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar"]);
+var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar", "hue"]);
 
 
 // Firebase auth factory

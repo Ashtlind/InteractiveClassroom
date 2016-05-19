@@ -123,6 +123,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
           $scope.itemsUpdate();
         });
       });
+    } else {
+      $scope.itemsUpdate();
     }
   });
 
@@ -145,6 +147,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
           $scope.itemsUpdate();
         });
       });
+    } else {
+      $scope.itemsUpdate();
     }
   });
 
