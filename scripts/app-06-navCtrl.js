@@ -1,11 +1,11 @@
-angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseArray', 'Auth', '$timeout', '$location', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location, $rootScope) {
-  var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseArray', 'Auth', '$timeout', '$location', '$rootScope', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location, $rootScope, fbRef) {
+  var root = fbRef;
 
   // ***
   // User Authentication
   $rootScope.userData = {};
 
-  Auth.$onAuth(function (authData) {
+  Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
       console.log(authData);
       $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid));
