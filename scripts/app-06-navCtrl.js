@@ -1,19 +1,18 @@
-angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseArray', 'Auth', '$timeout', '$location', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location, $rootScope) {
-  var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseArray', 'Auth', '$timeout', '$location', '$rootScope', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, Auth, $timeout, $location, $rootScope, fbRef) {
+  var root = fbRef;
 
   // ***
   // User Authentication
   $rootScope.userData = {};
-
-  Auth.$onAuth(function (authData) {
+  
+  Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
-      console.log(authData);
       $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid));
         $rootScope.userData.$loaded(function () {
           $rootScope.userData.uid = authData.uid;
-          $rootScope.userData.email = authData.google.email;
-          $rootScope.userData.name = authData.google.displayName;
-          $rootScope.userData.profileImageURL = authData.google.profileImageURL;
+          $rootScope.userData.email = authData.providerData[0].email;
+          $rootScope.userData.name = authData.providerData[0].displayName;
+          $rootScope.userData.profileImageURL = authData.providerData[0].photoURL;
           $rootScope.userData.LastLogin = Date();
           $rootScope.userData.$save().then(function () {
             // Tell the Controllers what's up
@@ -39,11 +38,17 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   });
 
   $scope.$on('login', function () {
-    Auth.$authWithOAuthPopup('google', {scope: "email"}).then(function(authData) {
+    // Add the firebase provided manually
+    // That way we can add profile scopes for required information
+    // https://developers.google.com/identity/protocols/googlescopes#google_sign-in
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    Auth.$signInWithPopup(provider).then(function(authData) {
       // Handled in $onAuth event
     }).catch(function(error) {
       if (error.code === 'TRANSPORT_UNAVAILABLE') {
-        Auth.$authWithOAuthRedirect(authMethod).then(function(authData) {
+        Auth.$signInWithRedirect(provider).then(function(authData) {
           // Handled in $onAuth event
         });
       } else {
@@ -53,7 +58,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   });
 
   $scope.$on('logout', function () {
-    Auth.$unauth();
+    Auth.$signOut();
     $location.path('/');
   });
   // End User Authentication
@@ -123,6 +128,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
           $scope.itemsUpdate();
         });
       });
+    } else {
+      $scope.itemsUpdate();
     }
   });
 
@@ -145,6 +152,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
           $scope.itemsUpdate();
         });
       });
+    } else {
+      $scope.itemsUpdate();
     }
   });
 

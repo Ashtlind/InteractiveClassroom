@@ -1,7 +1,27 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope) {
-    var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef) {
+    var root = fbRef;
 
     $scope.classid = $routeParams.classid.substring(1);
+
+/*
+    // HUE Experiments
+    // Get all lights
+    var myHue = hue;
+    myHue.setup({username: "datuserdoe", bridgeIP: "172.16.10.76", debug: true});
+    // Create username
+    var username = myHue.createUser({devicetype: "interactiveclassroom#amdevice"});
+    console.log(username);
+
+    myHue.getLights().then(function(lights) {
+      $scope.lights = lights;
+
+      // Switch light 1 on
+      myHue.setLightState(1, {"on": true}).then(function(response) {
+        $scope.lights[1].state.on = false;
+        console.log('API response: ', response);
+      });
+    });
+*/
 
     // Get the user's guid initially and subscribe to changes
     $rootScope.$broadcast('userGuidReq');
@@ -12,38 +32,52 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.userData = $firebaseObject(root.child("Users").child(guid));
     });
 
-    var classRef = new Firebase("https://interactiveclassroom.firebaseio.com/Classes/" + $scope.classid);
+    // Get class info and setup the basic structure
+    var classRef = root.child("Classes").child($scope.classid);
+    $scope.$watch('classPub', function (newVal, oldVal){
+      console.log(newVal);
+      if (newVal.CurrentLesson != undefined) {
+        // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
+        if (newVal.CurrentLesson != oldVal.CurrentLesson) {
+          // Update the lesson and students once the lesson has changed
+          $scope.Lesson = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson));
+          $scope.Students = $firebaseObject(classRef.child("Students"));
+        }
+        if (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined) {
+          console.log("HWLLO?");
+          // Update the current topic on change
+          $scope.Topic = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
+          console.log($scope.Topic);
+          $scope.Topic.$loaded(function () {
+            console.log($scope.Topic);
+          });
+        }
+      } else {
+        $scope.Students = {};
+        $scope.Lesson = {};
+        $scope.Topic = {};
+      }
+    });
+    $scope.classPub = $firebaseObject(classRef.child("/Pub"));
 
-    // Get class info
-    var classInfoRef = classRef.child("/Pub");
-    $scope.classInfo = $firebaseObject(classInfoRef);
-
-    // Get lamp list
-    var lampsRef = new Firebase("https://huehue.firebaseio.com/Hue/Lamps");
-    $scope.Lamps = $firebaseObject(lampsRef);
-    $scope.Lamps.$loaded(function () {
-
+    // Count the answers
+    $scope.$watch('Topic.Answers', function (newVal, oldVal) {
+      if (newVal != undefined) {
+        console.log(newVal);
+      }
     });
 
-    $scope.Lesson = {};
-    $scope.Topic = {};
-
-    $scope.$watch('classInfo', function (newVal, oldVal){
-      if (newVal.CurrentLesson != undefined && newVal.CurrentLesson != oldVal.CurrentLesson) {
-        $scope.Lesson = $firebaseObject(classInfoRef.child("Lessons").child(newVal.CurrentLesson));
-      }
-      if (newVal.CurrentTopic != undefined && newVal.CurrentTopic != oldVal.CurrentTopic) {
-        $scope.Lesson = $firebaseObject(classInfoRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
-      }
-    });
 
     $scope.pluralsAreGoodIGuess = function (numb){
       if(numb>1)
         return 's'
     }
 
+
+    // *** old stuff below ***
+    // *** old stuff below ***
+    // *** old stuff below ***
     $scope.$watch('lampSel', function(newVal) {
-        console.log(newVal);
         angular.forEach($scope.Lamps, function (lamp, key) {
             if (newVal == lamp) {
                 $scope.Settings.Lamp = key;
@@ -52,7 +86,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         });
 
     });
-
     $scope.createNewLesson = function() {
 
         // Create lesson with a new session
@@ -103,7 +136,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.Settings.$save();
         $scope.CurrentSession = {};
     };
-
 
     // Create new lamp
     /*lampsRef.push(

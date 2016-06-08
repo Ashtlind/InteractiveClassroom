@@ -1,5 +1,6 @@
-angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar) {
-    var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar, fbRef) {
+    var root = fbRef;
+    
     $scope.classid = $routeParams.classid.substring(1);
 
     $scope.classInfo = $firebaseObject(root.child("Classes").child($scope.classid).child("/Pub"));

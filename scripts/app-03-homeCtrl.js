@@ -1,5 +1,5 @@
-angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams, cfpLoadingBar) {
-  var root = new Firebase("https://interactiveclassroom.firebaseio.com");
+angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', 'cfpLoadingBar', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams, cfpLoadingBar, fbRef) {
+  var root = fbRef;
 
   // Route action - if any
   if ($routeParams.action != undefined){

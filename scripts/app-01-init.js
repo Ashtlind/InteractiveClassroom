@@ -10,14 +10,26 @@ $(document).ready(function () {
 
 
 // Angular app
-var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar"]);
+var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar", "hue"]);
 
+var config = {
+    apiKey: "AIzaSyBpdRvCW0oJH5ukKNWBZp3jipGVg8w0wyE",
+    authDomain: "interactiveclassroom.firebaseapp.com",
+    databaseURL: "https://interactiveclassroom.firebaseio.com",
+    storageBucket: "project-3354574417935505015.appspot.com",
+  };
+firebase.initializeApp(config);
 
-// Firebase auth factory
+// Firebase factories
+app.factory("fbRef", [
+  function() {
+    var ref = firebase.database().ref();
+    return ref;
+  }
+]);
 app.factory("Auth", ["$firebaseAuth",
   function($firebaseAuth) {
-    var ref = new Firebase("https://interactiveclassroom.firebaseio.com");
-    return $firebaseAuth(ref);
+    return $firebaseAuth();
   }
 ]);
 
