@@ -27,9 +27,9 @@ app.factory("fbRef", [
     return ref;
   }
 ]);
-app.factory("Auth", ["$firebaseAuth", "fbRef",
-  function($firebaseAuth, fbRef) {
-    return $firebaseAuth(fbRef);
+app.factory("Auth", ["$firebaseAuth",
+  function($firebaseAuth) {
+    return $firebaseAuth();
   }
 ]);
 
