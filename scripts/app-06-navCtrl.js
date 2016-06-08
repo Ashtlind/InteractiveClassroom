@@ -4,15 +4,9 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   // ***
   // User Authentication
   $rootScope.userData = {};
-
-  //Auth._auth.addScope('email');
-  console.log(Auth);
+  
   Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
-      console.log("HEREVV");
-      console.log(authData);
-      console.log(authData.providerData[0]);
-      console.log("HERE^^");
       $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid));
         $rootScope.userData.$loaded(function () {
           $rootScope.userData.uid = authData.uid;
