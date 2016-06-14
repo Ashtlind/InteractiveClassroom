@@ -10,8 +10,10 @@ var gulp = require("gulp"),
     replace = require("gulp-replace"),
     flatten = require("gulp-flatten"),
     uglify = require("gulp-uglify"),
-    livereload = require('gulp-livereload'),
-    sass = require('gulp-sass');
+    sass = require('gulp-sass'),
+    jade = require('gulp-jade'),
+    rename = require('gulp-rename'),
+    webserver = require('gulp-webserver');
 
 var paths = {};
 
@@ -19,12 +21,13 @@ paths.projectBase = "./";
 paths.webRoot = paths.projectBase;
 paths.bowerBase = paths.projectBase + "bower_components/";
 paths.appScriptsBase = paths.webRoot + "scripts/";
-paths.appStylesBase = paths.webRoot + "sass/";
+paths.appStylesBase = paths.webRoot + "styles/";
 paths.libBase = paths.webRoot + "vendor/";
 
 paths.appScriptsWildcard = paths.appScriptsBase + "**/*.js";
 paths.appScriptsMinifiedWildcard = paths.appScriptsBase + "**/*.min.js";
-paths.appStylesWildcard = paths.appStylesBase + "**/*.css";
+// Styles are combined in sass by appending to app.sass - no need for wildcards
+paths.appStylesWildcard = paths.appStylesBase + "app.sass";
 paths.appStylesMinifiedWildcard = paths.appStylesBase + "**/*.min.css";
 
 paths.appTargetScript = paths.appScriptsBase + "app.min.js";
@@ -35,7 +38,11 @@ paths.libTargetStyle = paths.libBase + "vendor.min.css";
 paths.bowerLibraries = {
     "jquery": paths.bowerBase + "jquery/dist/jquery*.{js,map}",
     "angular": paths.bowerBase + "angular/angular*.{js,map}",
-    "angular-route": paths.bowerBase + "angular-route/**/*.{js,map,css}",
+    "angular-route": paths.bowerBase + "angular-route/*.{js,map}",
+    "angular-animate": paths.bowerBase + "angular-animate/*.{js,map,css}",
+    "firebase": paths.bowerBase + "firebase/*.{js,map}",
+    "angularfire": paths.bowerBase + "angularfire/dist/*.{js,map}",
+    "angular-loading-bar": paths.bowerBase + "angular-loading-bar/build/*.{js,map,css}"
 };
 
 // Removes the vendor folder completely
@@ -64,6 +71,7 @@ gulp.task("clean:vendor", ["copy:vendor"], function (cb) {
 
     var targets = [
         paths.libBase + "**/*.min.js",
+        paths.libBase + "**/*.slim.js",
         paths.libBase + "**/*.min.js.map",
         paths.libBase + "**/*.min.css",
         paths.libBase + "**/*.css.map",
@@ -123,35 +131,43 @@ gulp.task("clean", ["clean:scripts", "clean:styles", "clean:vendor"]);
 // Builds a minified, concatenated version the application's javascript
 gulp.task("build:scripts", ["clean:scripts"], function () {
     return gulp.src([paths.appScriptsWildcard, "!" + paths.appScriptsMinifiedWildcard], { base: "." })
-        .pipe(concat(paths.appTargetScript))
-        .pipe(uglify()) // uncomment this line if you need to enable minification.
-        .pipe(gulp.dest(""));
+      .pipe(concat(paths.appTargetScript))
+      .pipe(uglify()) // uncomment this line if you need to enable minification.
+      .pipe(gulp.dest(""));
 });
 
 // Builds a minified, concatenated version of the application's css
 gulp.task("build:styles", ["clean:styles"], function () {
-    return gulp.src([paths.appStylesWildcard, "!" + paths.appStylesMinifiedWildcard])
-        .pipe(concat(paths.appTargetStyle))
-        .pipe(cssmin())
-        .pipe(gulp.dest(""));
+    return gulp.src(paths.appStylesWildcard)
+      .pipe(sass().on('error', sass.logError))
+      .pipe(cssmin())
+      .pipe(rename('app.min.css'))
+      .pipe(gulp.dest(paths.appStylesBase));
+});
+
+gulp.task('build:jade', function () {
+  return gulp.src('./jade/*.jade')
+    .pipe(jade().on('error', sass.logError))
+    .pipe(gulp.dest('./views'));
 });
 
 // Use this task to rebuild minified, concatenated versions of vendor, scripts and styles folder
-gulp.task("build:all", ["build:scripts", "build:styles", "build:vendor"]);
+gulp.task("build:all", ["build:scripts", "build:styles", "build:jade", "build:vendor"]);
 
 // Use this task to only rebuild minified, concatenated versions of scripts and styles folders but excluding the vendor folder
-gulp.task("build:user", ["build:scripts", "build:styles"]);
+gulp.task("build:user", ["build:scripts", "build:styles", "build:jade"]);
 
-gulp.task('sass', function () {
-  return gulp.src('./sass/**/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./css'))
-    .pipe(livereload());
+gulp.task('webserver', function() {
+  gulp.src(paths.webRoot)
+    .pipe(webserver({
+      livereload: true,
+      directoryListing: true,
+      open: true
+    }));
 });
 
-gulp.task('serve', function() {
-  livereload.listen();
-  livereload();
-  gulp.watch('./sass/**/*.scss', ['sass']);
-  //gulp.watch('less/*.less', ['less']);
+gulp.task("default", ["webserver"], function() {
+  gulp.watch('./styles/**/*.s*ss', ['build:styles']);
+  gulp.watch('./jade/*.jade', ['build:jade']);
+  gulp.watch('./scripts/*.js', ['build:scripts']);
 });
