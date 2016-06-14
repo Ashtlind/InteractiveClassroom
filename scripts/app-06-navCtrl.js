@@ -4,25 +4,26 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   // ***
   // User Authentication
   $rootScope.userData = {};
-  
+
   Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
-      $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid));
-        $rootScope.userData.$loaded(function () {
-          $rootScope.userData.uid = authData.uid;
-          $rootScope.userData.email = authData.providerData[0].email;
-          $rootScope.userData.name = authData.providerData[0].displayName;
-          $rootScope.userData.profileImageURL = authData.providerData[0].photoURL;
-          $rootScope.userData.LastLogin = Date();
-          $rootScope.userData.$save().then(function () {
-            // Tell the Controllers what's up
-            $rootScope.$broadcast('userGuid', $rootScope.userData.uid);
-          });
+      $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid).child("User"));
+      $rootScope.userData.$loaded(function () {
+        $rootScope.userData.uid = authData.uid;
+        $rootScope.userData.email = authData.providerData[0].email;
+        $rootScope.userData.name = authData.providerData[0].displayName;
+        $rootScope.userData.profileImageURL = authData.providerData[0].photoURL;
+        $rootScope.userData.LastLogin = Date();
+        $rootScope.userData.$save().then(function () {
+          // Tell the Controllers what's up
+          $rootScope.$broadcast('userGuid', $rootScope.userData.uid);
         });
-      } else {
-        $rootScope.userData = {};
-        $rootScope.$broadcast('userGuid', undefined);
-      }
+      });
+      $rootScope.classData = $firebaseObject(root.child("Users").child(authData.uid).child("Classes"));
+    } else {
+      $rootScope.userData = {};
+      $rootScope.$broadcast('userGuid', undefined);
+    }
   });
 
   // Controllers will ask for the authed user's guid - Send it back!
@@ -59,6 +60,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   $scope.$on('logout', function () {
     Auth.$signOut();
+    $rootScope.userData = {};
     $location.path('/');
   });
   // End User Authentication
@@ -109,7 +111,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     }
   };
 
-  $scope.$watch('userData.Partakes', function (newVal, oldVal) {
+  $scope.$watch('classData.Partakes', function (newVal, oldVal) {
     $scope.navitemspartakes = new Array();
     if (newVal != undefined && newVal != null) {
       angular.forEach(newVal, function (partake, key) {
@@ -133,7 +135,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     }
   });
 
-  $scope.$watch('userData.Teaches', function (newVal, oldVal) {
+  $scope.$watch('classData.Teaches', function (newVal, oldVal) {
     $scope.navitemsteaches = new Array();
     if (newVal != undefined && newVal != null) {
       angular.forEach(newVal, function (teach, key) {

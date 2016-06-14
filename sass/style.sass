@@ -335,6 +335,36 @@ select
 	height: 80%
 	top: 48%
 
+.stufaces
+	width: 90%
+	height: 40%
+	display: flex
+	justify-content: space-around
+	.stuface
+		flex: 1
+		cursor: pointer
+		svg
+			height: 100%
+			width: 100%
+
+.stufacesselect
+	width: 90%
+	margin-top: 0.5rem
+	height: $border-radius * 3
+	background-color: $dark
+	border-radius: $border-radius * 3
+	position: relative
+	overflow: hidden
+	&::before
+		height: $border-radius * 2
+		width: 33.333333%
+		left: $border-radius / 1.5
+		top: $border-radius / 2
+		background-color: $light
+		border-radius: $border-radius * 2
+		content: ""
+		position: absolute
+
 .answ
 	&::after
 		width: 69%

@@ -30,6 +30,8 @@
         <button ng-show="Settings.CurrentLesson == ''" type="button" ng-click="createNewLesson()" class="white">Start Lesson</button>
         <button ng-hide="Settings.CurrentLesson == ''" type="button" ng-click="finishLesson()" class="white">End Lesson</button>
         <button ng-hide="Settings.CurrentLesson == ''" type="button" ng-click="createNewSession()" class="white">New Topic</button>
+        <input ng-model="datinput"/>
+        <button ng-click="testthethings()">do the things</button>
       </div>
     </div>
     <div ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined" class="dash-bg-under-title-cont">

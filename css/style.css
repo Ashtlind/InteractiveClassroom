@@ -448,6 +448,50 @@ select option {
   top: 48%;
 }
 
+.stufaces {
+  width: 90%;
+  height: 40%;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
+}
+
+.stufaces .stuface {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  cursor: pointer;
+}
+
+.stufaces .stuface svg {
+  height: 100%;
+  width: 100%;
+}
+
+.stufacesselect {
+  width: 90%;
+  margin-top: 0.5rem;
+  height: 1.2rem;
+  background-color: #363842;
+  border-radius: 1.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stufacesselect::before {
+  height: 0.8rem;
+  width: 33.333333%;
+  left: 0.26667rem;
+  top: 0.2rem;
+  background-color: #ffffff;
+  border-radius: 0.8rem;
+  content: "";
+  position: absolute;
+}
+
 .answ {
   border-radius: 50%;
   width: 150px;
