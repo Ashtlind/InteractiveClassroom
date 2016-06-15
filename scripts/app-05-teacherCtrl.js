@@ -2,49 +2,90 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     var root = fbRef;
 
     $scope.classid = $routeParams.classid.substring(1);
+    var classRef = root.child("Classes").child($scope.classid);
 
-/*
+
     // HUE Experiments
     // Get all lights
     var myHue = hue;
-    myHue.setup({username: "datuserdoe", bridgeIP: "172.16.10.76", debug: true});
-    // Create username
-    var username = myHue.createUser({devicetype: "interactiveclassroom#amdevice"});
-    console.log(username);
+    myHue.setup({username: "SzDOKancs7zL7Vubik2dn3MAqJJ8QU46iRZa7qpB", bridgeIP: "172.16.11.40", debug: true});
+    // Create username - Goes to /api/username/api .... insted of just / api and getting the username as a response
+    //var username = myHue.createUser("interactiveclassroom#amdevice", "imauser");
+    //console.log(username);
 
     myHue.getLights().then(function(lights) {
       $scope.lights = lights;
 
+      console.log(lights);
+
       // Switch light 1 on
       myHue.setLightState(1, {"on": true}).then(function(response) {
-        $scope.lights[1].state.on = false;
+        //$scope.lights[1].state.on = false;
         console.log('API response: ', response);
       });
     });
-*/
+
+    $scope.convertRGBtoXY = function (red, green, blue) {
+      // http://www.developers.meethue.com/content/rgb-hue-color0-65535-javascript-language
+      // Gamma correction
+      red = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92);
+      green = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92);
+      blue = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92);
+
+      // Apply wide gamut conversion D65
+      var X = red * 0.664511 + green * 0.154324 + blue * 0.162028;
+      var Y = red * 0.283881 + green * 0.668433 + blue * 0.047685;
+      var Z = red * 0.000088 + green * 0.072310 + blue * 0.986039;
+
+      var fx = X / (X + Y + Z);
+      var fy = Y / (X + Y + Z);
+      if (isNaN(fx)) {
+          fx = 0.0;
+      }
+      if (isNaN(fy)) {
+          fy = 0.0;
+      }
+
+      // return x and y value in an array [0] being x and [1] being y
+      return [fx,fy];
+    };
+
+    $scope.testthethings = function () {
+      myHue.getLights().then(function(lights) {
+        $scope.lights = lights;
+        console.log(lights);
+        // Switch light 1 on
+        var rgb = $scope.datinput.split(',');
+        var xy = $scope.convertRGBtoXY(rgb[0], rgb[1], rgb[2]);
+        myHue.setLightState(1, {"on": true, "xy": xy, "transitiontime": 0}).then(function(response) {
+          //$scope.lights[1].state.on = false;
+          console.log('API response: ', response);
+        });
+      });
+    };
 
     // Get the user's guid initially and subscribe to changes
     $rootScope.$broadcast('userGuidReq');
     $scope.$on('userGuid', function (event, guid) {
-      if (guid == undefined || guid == null)
+      if (guid == undefined || guid == null) {
         $scope.userData = {};
-      else
-        $scope.userData = $firebaseObject(root.child("Users").child(guid));
+      } else {
+        // Init some controller globals
+        $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
+        $scope.classPub = $firebaseObject(classRef.child("/Pub"));
+      }
     });
 
     // Get class info and setup the basic structure
-    var classRef = root.child("Classes").child($scope.classid);
     $scope.$watch('classPub', function (newVal, oldVal){
-      console.log(newVal);
-      if (newVal.CurrentLesson != undefined) {
+      if (newVal != undefined && newVal.CurrentLesson != undefined) {
         // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
-        if (newVal.CurrentLesson != oldVal.CurrentLesson) {
+        if (oldVal == undefined || (newVal.CurrentLesson != oldVal.CurrentLesson)) {
           // Update the lesson and students once the lesson has changed
           $scope.Lesson = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson));
           $scope.Students = $firebaseObject(classRef.child("Students"));
         }
-        if (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined) {
-          console.log("HWLLO?");
+        if (oldVal == undefined || (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined)) {
           // Update the current topic on change
           $scope.Topic = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
           console.log($scope.Topic);
@@ -58,12 +99,37 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.Topic = {};
       }
     });
-    $scope.classPub = $firebaseObject(classRef.child("/Pub"));
 
-    // Count the answers
+    // Handle the answer calculations
     $scope.$watch('Topic.Answers', function (newVal, oldVal) {
       if (newVal != undefined) {
-        console.log(newVal);
+        $scope.Answers.Total = 0;
+        $scope.Answers.zero = 0;
+        $scope.Answers.one = 0;
+        $scope.Answers.two = 0;
+        angular.forEach(newVal, function (Answer){
+          $scope.Answers.Total += 1;
+          if (Answer.Answer < 1) {
+            $scope.Answers.zero += 1;
+          } else if (Answer.Answer < 2) {
+            $scope.Answers.one += 1;
+          } else if (Answer.Answer < 3) {
+            $scope.Answers.two += 1;
+          }
+        });
+        console.log($scope.Answers);
+      } else {
+        $scope.Answers = {};
+      }
+    });
+
+    // Get the Students
+    $scope.$watch('Students', function (newVal, oldVal) {
+      if (newVal != undefined) {
+        var totalStudents = 0;
+        angular.forEach(newVal, function(student) {
+          totalStudents += 1;
+        });
       }
     });
 

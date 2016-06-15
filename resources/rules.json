@@ -1,0 +1,59 @@
+{
+    "rules": {
+        "Classes" : {
+          "$class_id" : {
+            ".write": "data.child('Pub').child('Teacher').val() == auth.uid",
+            ".read": "data.child('Pub').child('Teacher').val() == auth.uid",
+            "Pub" : {
+              ".read" : "root.child('Users').child(auth.uid).child('Partakes').child($class_id).exists()"
+            },
+            "Lessons" : {
+              "$lesson_id" : {
+                "Pub" : {
+                  ".read" : "root.child('Classes').child($class_id).child('Pub').child('CurrentLesson').val() == $lesson_id"
+                },
+                "Topics" : {
+                  "$topic_id" : {
+                    "Answers" : {
+                      "$student_id" : {
+                        ".read" : "root.child('Classes').child($class_id).child('Pub').child('CurrentTopic').val() == $topic_id && $student_id == auth.uid",
+                        ".write" : "root.child('Classes').child($class_id).child('Pub').child('CurrentTopic').val() == $topic_id && $student_id == auth.uid"
+                      }
+                    }
+                  }
+                },
+                "Students" : {
+                  "$student_id" : {
+                    ".read" : "root.child('Classes').child($class_id).child('Pub').child('CurrentLesson').val() == $lesson_id && $student_id == auth.uid",
+                    ".write" : "root.child('Classes').child($class_id).child('Pub').child('CurrentLesson').val() == $lesson_id && $student_id == auth.uid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Users" : {
+          "$user_id" : {
+            "User": {
+              ".write": "auth.uid === $user_id"
+            },
+            "Classes": {
+        			"Partakes": {
+                ".write": "auth.uid === $user_id"
+              },
+              "Teaches": {
+                ".write": "auth.uid === $user_id"
+              }
+            },
+            ".read": "auth.uid === $user_id"
+          }
+        },
+        "Joiners" : {
+          "$joiner" : {
+            ".read" : "data.child('Date').val() < now"
+          }
+        },
+        "Hue" : {
+        }
+    }
+}

@@ -1,17 +1,10 @@
 html(ng-app="IC")
   head
     title Interactive Classroom
-    link(rel="stylesheet",href="/css/normalize.css")
-    link(rel="stylesheet",href="/css/style.css")
-    link(rel='stylesheet' href='/css/loading-bar.css' type='text/css' media='all')
-    script(type="text/javascript", src="//code.jquery.com/jquery-1.12.0.min.js")
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js")
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js")
-    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js")
-    script(type="text/javascript", src='/scripts/loading-bar.js')
-    script(src="https://www.gstatic.com/firebasejs/3.0.3/firebase.js")
-    script(src="https://cdn.firebase.com/libs/angularfire/2.0.1/angularfire.min.js")
-    script(src="/scripts/app-dist.js")
+    script(type="text/javascript", src="/scripts/vendor.min.js")
+    link(rel='stylesheet' href='/styles/vendor.min.css')
+    link(rel="stylesheet",href="/styles/app.min.css")
+    script(src="/scripts/app.min.js")
     
   body
       block content

@@ -14,7 +14,6 @@
 // * Pub - Class
 // Read by users where: Users/userid/Partakes/classguid != null
 
-
 // * Students - Lesson
 // Write by users where: data.parent() == data.parent().parent().parent().parent().child("CurrentLesson")
 // ^ && $userid = auth.uid
@@ -57,22 +56,25 @@
   }
 }
 
-
+// * Users / $userid / User
 // Read / Write by user where: userguid == auth.guid
 "Users" : {
   "google:12312345" : {
+    "User" : {
+      "Email and stuff" : "email thing and stuff"
+    },
     "Lamps" : {
       "-K1fr2-x-jQPIVVKlrMm" : "LO10"
     },
-    "CurrentClass" : "-K1fr2-x-jQPIVVKlr55",
-    "Teaches" : {
-      "-K1fr2-x-jQPIVVKlrb7" : "-K1fr2-x-jQPIVVKlr55"
-    },
-    "Partakes" : null
+    "Classes": {
+      "Teaches" : {
+        "-K1fr2-x-jQPIVVKlrb7" : "-K1fr2-x-jQPIVVKlr55"
+      },
+      "Partakes" : null
+    }
   },
   "google:1298318293" : {
     "Lamps" : null,
-    "CurrentClass" : "-K1fr2-x-jQPIVVKlr55",
     "Partakes" : {
       "-K1fr2-x-jQPIVVKlr55" : "Join DATE"
     }

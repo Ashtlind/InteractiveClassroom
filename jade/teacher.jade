@@ -1,3 +1,17 @@
+.fullpagecentercont
+  header
+    h1 {{classInfo.Name}}
+  .stufaces
+    .stuface
+      include ../svg/happyFace.svg
+    .stuface
+      include ../svg/BlankFace.svg
+    .stuface
+      include ../svg/ConfusedFace.svg
+  .stufacesselect
+
+p {{currentAnswer | json}}
+
 .teacherAngularApp
   .teacher-dash
       .answ-cont
@@ -32,6 +46,8 @@
           button(ng-show="Settings.CurrentLesson == ''", type='button', ng-click='createNewLesson()').white Start Lesson
           button(ng-hide="Settings.CurrentLesson == ''", type='button', ng-click='finishLesson()').white End Lesson
           button(ng-hide="Settings.CurrentLesson == ''", type='button', ng-click='createNewSession()').white New Topic
+          input(ng-model="datinput")
+          button(ng-click="testthethings()") do the things
       .dash-bg-under-title-cont(ng-hide="Settings.CurrentLesson == '' || Settings.CurrentLesson == undefined")
         .dash-bg-under-title(ng-class="findColor((CurrentSession.FalseCount/stuCount)*100)") Lamp colour based on currently confused students: {{(CurrentSession.FalseCount/stuCount)*100}}%&nbsp;&nbsp;
           span.fa.fa-edit.csr(ng-click="editc=!editc")

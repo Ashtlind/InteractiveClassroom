@@ -1,6 +1,6 @@
 angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar, fbRef) {
     var root = fbRef;
-    
+
     $scope.classid = $routeParams.classid.substring(1);
 
     $scope.classInfo = $firebaseObject(root.child("Classes").child($scope.classid).child("/Pub"));
@@ -16,7 +16,7 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
         // Init user based scope vars
         $scope.classInfo.$loaded(function () {
           var lessonRef = root.child("Classes").child($scope.classid).child("Lessons").child($scope.classInfo.CurrentLesson);
-          $scope.userData = $firebaseObject(root.child("Users").child(guid));
+          $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
           $scope.userData.$loaded(function () {
             $scope.myHeartbeat = $firebaseObject(lessonRef.child("Students").child($scope.userData.uid));
             // Setup a heartbeat loop

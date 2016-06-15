@@ -36,7 +36,7 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
       cfpLoadingBar.complete();
     } else {
       // That means we are authenticated
-      $scope.userData = $firebaseObject(root.child("Users").child(guid));
+      $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
       $scope.userData.$loaded(function () {
         if ($scope.joinBtn) {
           // If we had pressed a call to action and now authenticated - continue

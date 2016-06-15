@@ -1,8 +1,13 @@
-.studentAngular
-  .divStudent
-    header
-      h1 {{classInfo.Name}}
-    button(type="button",ng-click="answer(2)").blue I understand
-    button(type="button",ng-click="answer(1)").blue I am normal
-    button(type="button",ng-click="answer(0)").blue I am confused
-    p {{currentAnswer | json}}
+.fullpagecentercont
+  header
+    h1 {{classInfo.Name}}
+  .stufaces
+    .stuface
+      include ../svg/happyFace.svg
+    .stuface
+      include ../svg/BlankFace.svg
+    .stuface
+      include ../svg/ConfusedFace.svg
+  .stufacesselect
+
+p {{currentAnswer | json}}
