@@ -17,23 +17,28 @@ var gulp = require("gulp"),
 
 var paths = {};
 
+// Global paths and directories
 paths.projectBase = "./";
-paths.webRoot = paths.projectBase;
 paths.bowerBase = paths.projectBase + "bower_components/";
-paths.appScriptsBase = paths.webRoot + "scripts/";
-paths.appStylesBase = paths.webRoot + "styles/";
-paths.libBase = paths.webRoot + "vendor/";
+paths.libBase = paths.projectBase + "vendor/";
 
-paths.appScriptsWildcard = paths.appScriptsBase + "**/*.js";
-paths.appScriptsMinifiedWildcard = paths.appScriptsBase + "**/*.min.js";
+// Source files - wildcard definitions
+paths.appScriptsWildcard = paths.projectBase + "scripts/**/*.js";
+paths.appScriptsMinifiedWildcard = paths.projectBase + "scripts/**/*.min.js";
 // Styles are combined in sass by appending to app.sass - no need for wildcards
-paths.appStylesWildcard = paths.appStylesBase + "app.sass";
-paths.appStylesMinifiedWildcard = paths.appStylesBase + "**/*.min.css";
+paths.appStylesWildcard = paths.projectBase + "styles/app.sass";
+paths.appStylesMinifiedWildcard = paths.projectBase + "styles/**/*.min.css";
+paths.appJadeWildcard = paths.projectBase + "jade/*.jade";
 
-paths.appTargetScript = paths.appScriptsBase + "app.min.js";
-paths.appTargetStyle = paths.appStylesBase + "app.min.css"
-paths.libTargetScript = paths.libBase + "vendor.min.js";
-paths.libTargetStyle = paths.libBase + "vendor.min.css";
+// www directory compiles
+paths.webRoot = paths.projectBase + "www/";
+paths.scriptsWWW = paths.webRoot + "scripts/";
+paths.stylesWWW = paths.webRoot + "styles/";
+paths.jadeWWW = paths.webRoot + "views/";
+paths.appTargetScript = paths.scriptsWWW + "app.min.js";
+paths.appTargetStyle = paths.stylesWWW + "app.min.css"
+paths.libTargetScript = paths.scriptsWWW + "vendor.min.js";
+paths.libTargetStyle = paths.stylesWWW + "vendor.min.css";
 
 paths.bowerLibraries = {
     "jquery": paths.bowerBase + "jquery/dist/jquery*.{js,map}",
@@ -42,7 +47,8 @@ paths.bowerLibraries = {
     "angular-animate": paths.bowerBase + "angular-animate/*.{js,map,css}",
     "firebase": paths.bowerBase + "firebase/*.{js,map}",
     "angularfire": paths.bowerBase + "angularfire/dist/*.{js,map}",
-    "angular-loading-bar": paths.bowerBase + "angular-loading-bar/build/*.{js,map,css}"
+    "angular-loading-bar": paths.bowerBase + "angular-loading-bar/build/*.{js,map,css}",
+    "normalize-css": paths.bowerBase + "normalize-css/*.{map,css}"
 };
 
 // Removes the vendor folder completely
@@ -112,7 +118,6 @@ gulp.task("build:vendor", ["clean:vendor"], function (cb) {
         .pipe(gulp.dest(''));
 
     return merge(streams);
-
 });
 
 // Removes the minifier version of the application script
@@ -142,13 +147,23 @@ gulp.task("build:styles", ["clean:styles"], function () {
       .pipe(sass().on('error', sass.logError))
       .pipe(cssmin())
       .pipe(rename('app.min.css'))
-      .pipe(gulp.dest(paths.appStylesBase));
+      .pipe(gulp.dest(paths.stylesWWW));
 });
 
-gulp.task('build:jade', function () {
-  return gulp.src('./jade/*.jade')
-    .pipe(jade().on('error', sass.logError))
-    .pipe(gulp.dest('./views'));
+// Compile the jade into html in the web root / views directory
+gulp.task('build:jadecompile', function () {
+  return gulp.src(paths.appJadeWildcard)
+    .pipe(jade())
+    .pipe(gulp.dest(paths.jadeWWW));
+});
+// Runs jadecompile as dependancy - then will move the index file into the web root
+gulp.task('build:jadeindex', ['build:jadecompile'], function () {
+  return gulp.src(paths.jadeWWW + 'index.html')
+    .pipe(gulp.dest(paths.webRoot));
+});
+// Runs jadeindex as dependancy which copys the index.html to the web root - then will remove the index file from views
+gulp.task("build:jade", ["build:jadeindex"], function () {
+    return del(paths.jadeWWW + 'index.html');
 });
 
 // Use this task to rebuild minified, concatenated versions of vendor, scripts and styles folder
@@ -161,11 +176,11 @@ gulp.task('webserver', function() {
   gulp.src(paths.webRoot)
     .pipe(webserver({
       livereload: true,
-      directoryListing: true,
       open: true
     }));
 });
 
+// Run the webserver and watch for source changes
 gulp.task("default", ["webserver"], function() {
   gulp.watch('./styles/**/*.s*ss', ['build:styles']);
   gulp.watch('./jade/*.jade', ['build:jade']);

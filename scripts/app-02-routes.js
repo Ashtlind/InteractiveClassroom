@@ -12,7 +12,7 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
   $routeProvider.when("/class:classid", {
     // the rest is the same for ui-router and ngRoute...
     controller: "Student",
-    templateUrl: "student.html",
+    templateUrl: "/views/student.html",
     resolve: {
       // controller will not be loaded until $requireAuth resolves
       // Auth refers to our $firebaseAuth wrapper in the example above
@@ -25,7 +25,7 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
   }).when("/dashboard:classid", {
     // the rest is the same for ui-router and ngRoute...
     controller: "Teacher",
-    templateUrl: "teacher.html",
+    templateUrl: "/views/teacher.html",
     resolve: {
       // controller will not be loaded until $requireAuth resolves
       // Auth refers to our $firebaseAuth wrapper in the example above
@@ -36,10 +36,10 @@ angular.module('IC').config(["$routeProvider", function($routeProvider) {
       }]
     }
   }).when('/', {
-    templateUrl : 'home.html',
+    templateUrl : '/views/home.html',
     controller  : 'Home'
   }).when('/:action', {
-    templateUrl : 'home.html',
+    templateUrl : '/views/home.html',
     controller  : 'Home'
   }).otherwise({
     redirectTo: '/'
