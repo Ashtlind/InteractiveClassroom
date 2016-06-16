@@ -10,7 +10,7 @@ $(document).ready(function () {
 
 
 // Angular app
-var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar", "hue"]);
+var app = angular.module("IC", ["firebase", "ngAnimate", "ngRoute", "angular-loading-bar", "hue", "angularResizable", "ngDragDrop"]);
 
 var config = {
     apiKey: "AIzaSyBpdRvCW0oJH5ukKNWBZp3jipGVg8w0wyE",

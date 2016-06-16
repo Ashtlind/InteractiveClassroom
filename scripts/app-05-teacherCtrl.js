@@ -212,6 +212,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         'Lamp':'5'
     });*/
 
+    $scope.colorDrop = function () {
+      console.log("Dropped!");
+    };
+
+    $scope.drag = "test";
+    $scope.drop = "";
+
+    $scope.$watch('drag', function (newVal, oldval) {
+      console.log(newVal);
+    });
 
     $scope.editc = false;
     // Colors and settings

@@ -13,7 +13,8 @@ var gulp = require("gulp"),
     sass = require('gulp-sass'),
     jade = require('gulp-jade'),
     rename = require('gulp-rename'),
-    webserver = require('gulp-webserver');
+    webserver = require('gulp-webserver'),
+    autoprefixer = require('gulp-autoprefixer');
 
 var paths = {};
 
@@ -48,7 +49,10 @@ paths.bowerLibraries = {
     "firebase": paths.bowerBase + "firebase/*.{js,map}",
     "angularfire": paths.bowerBase + "angularfire/dist/*.{js,map}",
     "angular-loading-bar": paths.bowerBase + "angular-loading-bar/build/*.{js,map,css}",
-    "normalize-css": paths.bowerBase + "normalize-css/*.{map,css}"
+    "normalize-css": paths.bowerBase + "normalize-css/*.{map,css}",
+    "angular-resizable": paths.bowerBase + "angular-resizable/src/*.{js,map,css}",
+    "jquery-ui": paths.bowerBase + "jquery-ui/*.{js,map}",
+    "angular-dragdrop": paths.bowerBase + "angular-dragdrop/src/*.{js,map}"
 };
 
 // Removes the vendor folder completely
@@ -145,6 +149,7 @@ gulp.task("build:scripts", ["clean:scripts"], function () {
 gulp.task("build:styles", ["clean:styles"], function () {
     return gulp.src(paths.appStylesWildcard)
       .pipe(sass().on('error', sass.logError))
+      .pipe(autoprefixer())
       .pipe(cssmin())
       .pipe(rename('app.min.css'))
       .pipe(gulp.dest(paths.stylesWWW));

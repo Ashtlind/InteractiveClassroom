@@ -365,6 +365,70 @@ select
 		content: ""
 		position: absolute
 
+.colorbarcont
+	position: absolute
+	left: 0
+	bottom: 0
+	width: 100%
+.colorbarselector
+	width: 100%
+	height: 3rem
+	background-color: $dark
+	padding: 0.3rem
+	.colorbarselect
+		width: 2rem
+		height: 2rem
+		border-radius: 0.3rem
+		display: inline-block
+		margin-right: 0.5rem
+
+.colorbar
+	width: 100%
+	height: 5rem
+	background-color: $dark
+	box-shadow: 0 -0.3rem 0 0 darken($dark, 10%)
+	padding: 0.45rem
+	padding-right: 0.15rem
+	flex: 1
+	display: flex
+	flex-flow: row nowrap
+	justify-content: space-around
+	align-content: space-around
+	.colorbarcolor
+		transition: all 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
+		height: 100%
+		position: relative
+		margin-right: 0.3rem
+		min-width: 100px
+		border-radius: $border-radius
+		overflow: hidden
+		flex: 1
+		background-color: $light
+		&.resizable
+			flex: 0 1 300px
+			.rg-right
+				background-color: rgba(0,0,0,0.2)
+				margin-right: 0
+				span
+					border: 1px solid rgba(0,0,0,0.3)
+					border-width: 0 1px
+		&::before, &::after
+			position: absolute
+			//content: "|"
+			line-height: 5rem
+			font-size: 1rem
+			color: rgba(0,0,0,0.2)
+			width: 30%
+			height: 100%
+			background-color: rgba(0,0,0,0.2)
+			cursor: col-resize
+			top: 0
+		&::before
+			left: 0
+		&::after
+			right: 0
+
+
 .answ
 	&::after
 		width: 69%
