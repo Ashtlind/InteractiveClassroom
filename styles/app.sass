@@ -17,15 +17,11 @@ $lampRoyalBlue: #4169E1
 $lampLightSkyBlue: $light-blue
 $lampAqua: #87CEFA
 $lampAquaMarine: #7FFFD4
-$lampGreen: #008000
-$lampLimeGreen: #32CD32
-$lampYellow: #F5F57A
-$lampGoldenrod: #DAA520
+$lampGreen: $green
+$lampYellow: $yellow
 $lampOrange: #FFA500
 $lampRed: $red
-$lampPink: #FFC0CB
 $lampFuchsia: #FF00FF
-$lampOrchid: #DA70D6
 $lampLavender: #E6E6FA
 
 $border-radius: 0.4rem
@@ -355,6 +351,7 @@ select
 	border-radius: $border-radius * 3
 	position: relative
 	overflow: hidden
+	cursor:
 	&::before
 		height: $border-radius * 2
 		width: 33.333333%
@@ -370,17 +367,56 @@ select
 	left: 0
 	bottom: 0
 	width: 100%
+.opencolorbarselector
+	width: 3rem
+	position: absolute
+	top: -2.4rem
+	left: 0
+	height: 2rem
+	font-size: 1.5rem
+	cursor: pointer
+	z-index: 2
+	user-select: none
+	span
+		&.light
+			color: $light
+		&.dark
+			color: $dark
 .colorbarselector
 	width: 100%
-	height: 3rem
 	background-color: $dark
 	padding: 0.3rem
+	padding-bottom: 0.6rem
+	position: absolute
+	top: -3.3rem
+	border-top: 0.3rem solid darken($dark, 10%)
+	&.ng-hide-remove
+		animation: colorbarselector 0.3s cubic-bezier(0.42, 0, 0.22, 1.18) reverse
+	&.ng-hide-add
+		animation: colorbarselector 0.3s cubic-bezier(0.42, 0, 0.22, 1.18)
 	.colorbarselect
 		width: 2rem
 		height: 2rem
-		border-radius: 0.3rem
+		border-radius: 50%
 		display: inline-block
 		margin-right: 0.5rem
+		cursor: -webkit-grab
+		font-size: 2.4rem
+		position: relative
+		.material-icons
+			position: absolute
+			top: -0.15rem
+			left: 0
+		&:active
+			cursor: -webkit-grabbing
+		&.removecolor
+			color: $red
+
+@keyframes colorbarselector
+	from
+		top: -3.3rem
+	to
+		top: 0rem
 
 .colorbar
 	width: 100%
@@ -388,12 +424,27 @@ select
 	background-color: $dark
 	box-shadow: 0 -0.3rem 0 0 darken($dark, 10%)
 	padding: 0.45rem
-	padding-right: 0.15rem
+	padding-left: 4rem
+	padding-right: 4.15rem
 	flex: 1
 	display: flex
 	flex-flow: row nowrap
 	justify-content: space-around
 	align-content: space-around
+	position: relative
+	overflow: hidden
+	.colorbarfacel, .colorbarfacer
+		width: 6rem
+		height: 6rem
+		top: -0.5rem
+		position: absolute
+		svg
+			height: 100%
+			width: 100%
+	.colorbarfacel
+		left: -3rem
+	.colorbarfacer
+		right: -3rem
 	.colorbarcolor
 		transition: all 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
 		height: 100%
@@ -403,7 +454,26 @@ select
 		border-radius: $border-radius
 		overflow: hidden
 		flex: 1
-		background-color: $light
+		&.colorbarcoloradd
+			max-width: 4rem
+			position: relative
+			z-index: 5
+			background-color: darken($dark, 10%)
+			.material-icons
+				font-size: 3rem
+				left: 0
+				line-height: 4.3rem
+			&.colorbarcolorhover
+				&::before
+					height: 100%
+					color: $dark
+					content: "Add"
+					background-color: $light
+		&.colorbarcolorhover
+			&::before
+				height: 100%
+				content: "Change colour"
+				background-color: rgba(0,0,0,0.3)
 		&.resizable
 			flex: 0 1 300px
 			.rg-right
@@ -412,22 +482,17 @@ select
 				span
 					border: 1px solid rgba(0,0,0,0.3)
 					border-width: 0 1px
-		&::before, &::after
-			position: absolute
-			//content: "|"
-			line-height: 5rem
-			font-size: 1rem
-			color: rgba(0,0,0,0.2)
-			width: 30%
-			height: 100%
-			background-color: rgba(0,0,0,0.2)
-			cursor: col-resize
-			top: 0
 		&::before
+			position: absolute
+			width: 100%
+			height: 0%
+			color: $light
+			content: ""
+			line-height: 4.3rem
 			left: 0
-		&::after
-			right: 0
-
+			transition: all 0.3s ease-out
+			background-color: rgba(0,0,0,0)
+			z-index: 2
 
 .answ
 	&::after
@@ -638,6 +703,9 @@ select
 	&:hover
 		transform: scale(0.9)
 
+.bglc-Transparent
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 1rem, rgba(255,255,255,.1) 1rem, rgba(255,255,255,.1) 2rem)
+	border: 0.3rem solid lighten($dark, 15%)
 .bglc-Violet
 	background-color: $lampViolet
 .bglc-RoyalBlue
@@ -650,22 +718,14 @@ select
 	background-color: $lampAquaMarine
 .bglc-Green
 	background-color: $lampGreen
-.bglc-LimeGreen
-	background-color: $lampLimeGreen
 .bglc-Yellow
 	background-color: $lampYellow
-.bglc-Goldenrod
-	background-color: $lampGoldenrod
 .bglc-Orange
 	background-color: $lampOrange
 .bglc-Red
 	background-color: $lampRed
-.bglc-Pink
-	background-color: $lampPink
 .bglc-Fuchsia
 	background-color: $lampFuchsia
-.bglc-Orchid
-	background-color: $lampOrchid
 .bglc-Lavender
 	background-color: $lampLavender
 

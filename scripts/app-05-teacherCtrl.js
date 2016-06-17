@@ -226,15 +226,71 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     $scope.editc = false;
     // Colors and settings
     $scope.colors = new Array();
-    $scope.avalicolors = ["Violet","RoyalBlue","LightSkyBlue","Aqua", "AquaMarine","Green","LimeGreen","Yellow","Goldenrod","Orange","Red","Pink","Fuchsia","Orchid","Lavender"];
+    $scope.avalicolors = ["Violet","RoyalBlue","LightSkyBlue","Aqua", "AquaMarine","Green","Yellow","Orange","Red","Fuchsia","Lavender","Transparent"];
+    $scope.removeColor = "REMOVE";
 
-    //tempsetup
-    $scope.colors.push({"perc":"0%"}); // Util for start - to specify starting index
+    //$scope.colors.push({"perc":"0%"}); // Util for start - to specify starting index
     $scope.colors.push({"color":"Violet", "perc":"40%"});
     $scope.colors.push({"color":"RoyalBlue", "perc":"50%"});
     $scope.colors.push({"color":"LightSkyBlue", "perc":"70%"});
     $scope.colors.push({"color":"AquaMarine", "perc":"100%"});
 
+    $scope.draggingColor = false;
+    $scope.draggingColorStart = function () {
+      $scope.$apply(function () {
+        $scope.draggingColor = true;
+      });
+    };
+    $scope.draggingColorStop = function () {
+      $scope.$apply(function () {
+        $scope.draggingColor = false;
+      });
+    };
+    $scope.draggingColorRemove = false;
+    $scope.draggingColorRemoveStart = function () {
+      $scope.$apply(function () {
+        $scope.draggingColorRemove = true;
+      });
+    };
+    $scope.draggingColorRemoveStop = function () {
+      $scope.$apply(function () {
+        $scope.draggingColorRemove = false;
+      });
+    };
+
+    $scope.dropColorHoverOver = function (ele) {
+      angular.element(ele.target).addClass("colorbarcolorhover");
+    };
+    $scope.dropColorHoverOut = function (ele) {
+      angular.element(ele.target).removeClass("colorbarcolorhover");
+    };
+
+    $scope.colorbaradd = {};
+    $scope.droppedColor = function (ele) {
+      angular.element(ele.target).removeClass("colorbarcolorhover");
+      console.log(ele);
+
+      if ($scope.draggingColorRemove) {
+        // Loop though the colors and remove any that are incorrect
+        angular.forEach($scope.colors, function (color, key) {
+          if (color.color == "REMOVE") {
+            $scope.colors.splice(key, 1);
+          }
+        });
+      }
+
+      if ($scope.colorbaradd != {}) {
+        if ($scope.colorbaradd.left != undefined && $scope.colorbaradd.left != "") {
+          $scope.colors.splice(0, 0, {"color": $scope.colorbaradd.left});
+        }
+        if ($scope.colorbaradd.right != undefined && $scope.colorbaradd.right != "") {
+          $scope.colors.push({"color": $scope.colorbaradd.right});
+        };
+        $scope.colorbaradd = {};
+      }
+    };
+
+    /*
     $scope.colorPercDiff = function (color){
       var indx = $scope.colors.indexOf(color) - 1;
       var st = parseInt($scope.colors[indx].perc.substring(0, color.perc.length-1));
@@ -253,6 +309,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         lastperc = en;
       });
       return ret;
-    };
+    };*/
 
 }]);
