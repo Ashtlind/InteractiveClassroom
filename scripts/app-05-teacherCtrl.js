@@ -50,13 +50,11 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       return [fx,fy];
     };
 
-    $scope.testthethings = function () {
+    $scope.testthethings = function (r,g,b) {
       myHue.getLights().then(function(lights) {
         $scope.lights = lights;
-        console.log(lights);
         // Switch light 1 on
-        var rgb = $scope.datinput.split(',');
-        var xy = $scope.convertRGBtoXY(rgb[0], rgb[1], rgb[2]);
+        var xy = $scope.convertRGBtoXY(r,g,b);
         myHue.setLightState(1, {"on": true, "xy": xy, "transitiontime": 0}).then(function(response) {
           //$scope.lights[1].state.on = false;
           console.log('API response: ', response);
@@ -230,10 +228,10 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     $scope.removeColor = "REMOVE";
 
     //$scope.colors.push({"perc":"0%"}); // Util for start - to specify starting index
-    $scope.colors.push({"color":"Violet", "perc":"40%"});
-    $scope.colors.push({"color":"RoyalBlue", "perc":"50%"});
-    $scope.colors.push({"color":"LightSkyBlue", "perc":"70%"});
-    $scope.colors.push({"color":"AquaMarine", "perc":"100%"});
+    $scope.colors.push({"color":"Violet", "perc":"40"});
+    $scope.colors.push({"color":"RoyalBlue", "perc":"50"});
+    $scope.colors.push({"color":"LightSkyBlue", "perc":"70"});
+    $scope.colors.push({"color":"AquaMarine", "perc":"100"});
 
     $scope.draggingColor = false;
     $scope.draggingColorStart = function () {
@@ -290,25 +288,39 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       }
     };
 
-    /*
-    $scope.colorPercDiff = function (color){
-      var indx = $scope.colors.indexOf(color) - 1;
-      var st = parseInt($scope.colors[indx].perc.substring(0, color.perc.length-1));
-      var en = parseInt(color.perc.substring(0, color.perc.length-1));
-      return en-st+"%";
+    // Recalculates percentages for the colors - triggered on mouse up for resizing and on adding / remove
+    $scope.recalcColor = function () {
+      var containerWidth = $('.colorbar').width();
+      var tot = 0;
+      angular.forEach($scope.colors, function (color, key){
+        var wth = ($('#color-' + key).outerWidth(true) / containerWidth) * 100;
+        tot += wth;
+        color.perc = wth;
+      });
+      console.log($scope.colors);
+
     };
 
+    // Get the current color based on the percentage - update light
     $scope.findColor = function (perc){
+      console.log("FIND");
       var ret = "bgc-gray";
       var lastperc = 0;
-      angular.forEach($scope.colors, function(col){
-        var en = parseInt(col.perc.substring(0, col.perc.length-1));
-        if (lastperc <= perc && en > perc){
+      angular.forEach($scope.colors, function(col, key) {
+        if (lastperc <= perc && lastperc+col.perc > perc) {
+          console.log("found one!");
           ret = "bglc-" + col.color;
+          var color = $("#color-" + key).css("backgroundColor");
+          console.log(color);
+          var matchColors = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/;
+          var match = matchColors.exec(color);
+          if (match !== null) {
+              console.log('Red: ' + match[1] + ' Green: ' + match[2] + ' Blue: ' + match[3]);
+              $scope.testthethings(match[1],match[2],match[3]);
+          }
         }
-        lastperc = en;
+        lastperc += col.perc;
       });
       return ret;
-    };*/
-
+    };
 }]);

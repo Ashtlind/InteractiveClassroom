@@ -1,10 +1,15 @@
 .fullpagecentercont
   header
-    h1 {{classInfo.Name}}
+    h1 {{classPub.Name}}
+    p {{Answers | json}}
+    button(ng-click="findColor(fakeperc)") Test
+    input(ng-model="fakeperc")
   .colorbarcont
     span.material-icons.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
       span(ng-if="!colorbarselect" class="dark") edit
       span(ng-if="colorbarselect" class="light") close
+    .colorbarindicatorcont
+      .colorbarindicator.material-icons(style="left: {{fakeperc}}%") lightbulb_outline
     .colorbarselector(ng-show="colorbarselect")
       .colorbarselect(ng-repeat="color in avalicolors" data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorStart', onStop:'draggingColorStop'}" class="bglc-{{color}}" ng-model="color")
       .colorbarselect(data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorRemoveStart', onStop:'draggingColorRemoveStop'}" class="removecolor" ng-model="removeColor")
@@ -12,16 +17,15 @@
     .colorbar
       .colorbarfacel
         include ../svg/BlankFace.svg
-      section.colorbarcolor.colorbarcoloradd(ng-if="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.left")
+      .colorbarcoloraddl(ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.left")
         span.material-icons add
-      section.colorbarcolor(ng-repeat="color in colors" ng-if="!$last" resizable r-directions="['right']" r-flex="true" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="color.color" ng-class="'bglc-'+color.color")
-      section.colorbarcolor(data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colors[colors.length-1].color" ng-class="'bglc-'+colors[colors.length-1].color")
-      section.colorbarcolor.colorbarcoloradd(ng-if="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.right")
+      section.colorbarcolor(ng-repeat="(key, color) in colors" id="color-{{key}}" ng-if="!$last" resizable r-directions="['right']" r-flex="true" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="color.color" ng-class="'bglc-'+color.color" ng-mouseup="recalcColor()")
+      section.colorbarcolor(id="color-{{colors.length-1}}" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colors[colors.length-1].color" ng-class="'bglc-'+colors[colors.length-1].color" ng-mouseup="recalcColor()")
+      .colorbarcoloraddr(ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.right")
         span.material-icons add
       .colorbarfacer
         include ../svg/happyFace.svg
       
-p {{currentAnswer | json}}
 
 .teacherAngularApp
   .teacher-dash

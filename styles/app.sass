@@ -382,6 +382,42 @@ select
 			color: $light
 		&.dark
 			color: $dark
+.colorbarindicatorcont
+	position: absolute
+	left: 4rem
+	right: 4rem
+	height: 100%
+	pointer-events: none
+	.colorbarindicator
+		position: absolute
+		transition: left 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
+		left: 50%
+		width: 2rem
+		z-index: 10
+		height: 100%
+		margin-left: -1rem
+		font-size: 2rem
+		line-height: 5rem
+		&::before
+			content: ""
+			position: absolute
+			bottom: 0
+			left: 0.2rem
+			width: 0
+			height: 0
+			border-style: solid
+			border-width: 0 0.8rem 1rem 0.8rem
+			border-color: transparent transparent $dark transparent
+		&::after
+			content: ""
+			position: absolute
+			top: 0
+			left: 0.2rem
+			width: 0
+			height: 0
+			border-style: solid
+			border-width: 1rem 0.8rem 0 0.8rem
+			border-color: $dark transparent transparent transparent
 .colorbarselector
 	width: 100%
 	background-color: $dark
@@ -425,7 +461,7 @@ select
 	box-shadow: 0 -0.3rem 0 0 darken($dark, 10%)
 	padding: 0.45rem
 	padding-left: 4rem
-	padding-right: 4.15rem
+	padding-right: 3.7rem
 	flex: 1
 	display: flex
 	flex-flow: row nowrap
@@ -445,6 +481,44 @@ select
 		left: -3rem
 	.colorbarfacer
 		right: -3rem
+	.colorbarcoloraddl, .colorbarcoloraddr
+		width: 3.3rem
+		position: absolute
+		top: 0
+		z-index: 5
+		height: 100%
+		background-color: darken($dark, 10%)
+		transition: all 0.3s cubic-bezier(0.42, 0, 0.22, 1.18)
+		opacity: 1
+		&.ng-hide-add
+			animation: colorbarcoloradd 0.3s ease-in-out reverse
+		&.ng-hide-remove
+			animation: colorbarcoloradd 0.3s ease-in-out
+		.material-icons
+			font-size: 3rem
+			left: 0
+			line-height: 5rem
+		&::before
+			position: absolute
+			width: 100%
+			height: 0%
+			color: $dark
+			content: ""
+			line-height: 5rem
+			left: 0
+			transition: all 0.3s ease-out
+			background-color: $light
+			z-index: 6
+		&.colorbarcolorhover
+			&::before
+				height: 100%
+				color: $dark
+				content: "Add"
+				background-color: $light
+	.colorbarcoloraddr
+		right: 0
+	.colorbarcoloraddl
+		left: 0
 	.colorbarcolor
 		transition: all 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
 		height: 100%
@@ -454,21 +528,6 @@ select
 		border-radius: $border-radius
 		overflow: hidden
 		flex: 1
-		&.colorbarcoloradd
-			max-width: 4rem
-			position: relative
-			z-index: 5
-			background-color: darken($dark, 10%)
-			.material-icons
-				font-size: 3rem
-				left: 0
-				line-height: 4.3rem
-			&.colorbarcolorhover
-				&::before
-					height: 100%
-					color: $dark
-					content: "Add"
-					background-color: $light
 		&.colorbarcolorhover
 			&::before
 				height: 100%
@@ -491,8 +550,14 @@ select
 			line-height: 4.3rem
 			left: 0
 			transition: all 0.3s ease-out
-			background-color: rgba(0,0,0,0)
+			background-color: $dark
 			z-index: 2
+
+@keyframes colorbarcoloradd
+	from
+		opacity: 0
+	to
+		opacity: 1
 
 .answ
 	&::after
@@ -566,138 +631,6 @@ select
 		margin-right: -100%
 		opacity: 0
 
-.teacher-dash
-	width: 100%
-	overflow: hidden
-	text-align: center
-	.dash-bg
-		height: 450px
-		width: 100%
-		margin-top: 70px
-		transition: background-color 1s ease-in-out
-		padding: 2rem
-		padding-top: 50px
-	.dash-bg-under-title-cont
-		background-color: #000
-		.dash-bg-under-title
-			transition: background-color 1s ease-in-out
-			color: #FFF
-			border-bottom-color: #fff
-			border-bottom-style: solid
-			border-bottom-width: 0.15rem
-			opacity: 0.95
-			line-height: 1.5rem
-	.dash-bg-under
-		background-color: $gray
-		width: 100%
-		height: 2rem
-		overflow: hidden
-		box-shadow: 0 0.3rem 0 0 #E8E8E8
-		margin-bottom: 1rem
-		&.ng-hide-add
-			animation: dash-bg-underhide 0.2s ease-in-out
-		&.ng-hide-remove
-			animation: dash-bg-underhide 0.2s ease-in-out reverse
-		.dash-bg-under-color
-			height: 100%
-			float: left
-			transition: all 0.5s ease-in-out
-		.dash-bg-under-current-container
-			padding-right: 1rem
-		.dash-bg-under-current
-			transition: margin-left 1s ease-in-out
-			position: relative
-			.dash-bg-under-perc
-				color: #fff
-				position: absolute
-				left: 0.15rem
-				top: 0.60rem
-				font-size: 1.25rem
-			.dash-bg-under-arrow
-				width: 0
-				height: 0
-				border-left: 0.5rem solid transparent
-				border-right: 0.5rem solid transparent
-				border-top: 0.5rem solid #fff
-
-@keyframes dash-bg-underhide
-	from
-		height: 2rem
-		opacity: 1
-	to
-		height: 0
-		opacity: 0
-
-.progress
-	width: 90%
-	margin-left: auto
-	margin-right: auto
-	height: 1rem
-	background-color: $gray
-	border-radius: 0.2rem
-	text-align: left
-	overflow: hidden
-	.prog-true
-		transition: width 0.5s ease-in-out
-		margin: 0
-		background-color: $green
-		height: 100%
-		display: inline-block
-		float: left
-	.prog-false
-		transition: width 0.5s ease-in-out
-		margin: 0
-		background-color: $red
-		height: 100%
-		display: inline-block
-		float: left
-
-.color-choose
-	padding: 2rem
-	padding-top: 0.5rem
-.color-option
-	padding: 0.5rem
-	text-align: left
-	.color-option-values
-		position: absolute
-		display: inline-block
-	.prev-prec
-		display: inline-block
-		width: 2rem
-	input, span, .prev-prec
-		margin-left: 1rem
-	.color-option-previews
-		max-width: 20rem
-		display: inline-block
-	.color-option-preview
-		width: 1.2rem
-		height: 1.2rem
-		margin: 0.2rem
-		display: inline-block
-		border: solid 0.15rem $gray
-		&.active
-			border-color: #000
-		&:hover
-			border-color: $dark-gray
-			cursor: pointer
-
-.responses, .divStudent
-	padding: 2rem
-.dash-options
-	color: #fff
-.bgc-gray
-	background-color: $dark-gray
-.bgc-blue
-	background-color: $light-blue
-.bgc-green
-	background-color: $green
-.bgc-red
-	background-color: $red
-
-.text-green
-	color: $green
-.text-red
-	color: $red
 .csr
 	cursor: pointer
 	&:hover
