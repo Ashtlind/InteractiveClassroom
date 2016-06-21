@@ -80,8 +80,19 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
         if (oldVal == undefined || (newVal.CurrentLesson != oldVal.CurrentLesson)) {
           // Update the lesson and students once the lesson has changed
-          $scope.Lesson = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson));
-          $scope.Students = $firebaseObject(classRef.child("Students"));
+          $scope.Students.List = $firebaseArray(classRef.child("Lessons").child(newVal.CurrentLesson).child("Students"));
+          $scope.Students.List.$watch(function (event) {
+            if ($scope.Students != undefined && $scope.Students.List != undefined) {
+              var totalStudents = 0;
+              angular.forEach($scope.Students.List, function(student) {
+                // If student client has checked in in the last ~1.15 minutes - add them to the current participating students
+                if (student.$value >= Date.now() - 70000) {
+                  totalStudents += 1;
+                }
+              });
+              $scope.Students.StudentTotal = totalStudents;
+            }
+          });
         }
         if (oldVal == undefined || (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined)) {
           // Update the current topic on change
@@ -93,7 +104,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         }
       } else {
         $scope.Students = {};
-        $scope.Lesson = {};
         $scope.Topic = {};
       }
     });
@@ -120,17 +130,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.Answers = {};
       }
     });
-
-    // Get the Students
-    $scope.$watch('Students', function (newVal, oldVal) {
-      if (newVal != undefined) {
-        var totalStudents = 0;
-        angular.forEach(newVal, function(student) {
-          totalStudents += 1;
-        });
-      }
-    });
-
 
     $scope.pluralsAreGoodIGuess = function (numb){
       if(numb>1)
@@ -201,37 +200,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.CurrentSession = {};
     };
 
-    // Create new lamp
-    /*lampsRef.push(
-    {
-        'Name': 'Testing',
-        'AppKey': '25cb29131e448e6f3b55c80b1e0df1e7',
-        'Ip': '172.17.24.201',
-        'Lamp':'5'
-    });*/
-
-    $scope.colorDrop = function () {
-      console.log("Dropped!");
-    };
-
-    $scope.drag = "test";
-    $scope.drop = "";
-
-    $scope.$watch('drag', function (newVal, oldval) {
-      console.log(newVal);
-    });
-
-    $scope.editc = false;
     // Colors and settings
     $scope.colors = new Array();
-    $scope.avalicolors = ["Violet","RoyalBlue","LightSkyBlue","Aqua", "AquaMarine","Green","Yellow","Orange","Red","Fuchsia","Lavender","Transparent"];
+    $scope.avalicolors = ["RoyalBlue","Aqua", "Green","Yellow","Orange","Red","Fuchsia","Violet","Lavender","Transparent"];
     $scope.removeColor = "REMOVE";
 
     //$scope.colors.push({"perc":"0%"}); // Util for start - to specify starting index
-    $scope.colors.push({"color":"Violet", "perc":"40"});
+    $scope.colors.push({"color":"Violet", "perc":"10"});
     $scope.colors.push({"color":"RoyalBlue", "perc":"50"});
-    $scope.colors.push({"color":"LightSkyBlue", "perc":"70"});
-    $scope.colors.push({"color":"AquaMarine", "perc":"100"});
+    $scope.colors.push({"color":"Green", "perc":"20"});
+    $scope.colors.push({"color":"Aqua", "perc":"20"});
 
     $scope.draggingColor = false;
     $scope.draggingColorStart = function () {
@@ -263,6 +241,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       angular.element(ele.target).removeClass("colorbarcolorhover");
     };
 
+    // Used for adding colors to each end of the bar
     $scope.colorbaradd = {};
     $scope.droppedColor = function (ele) {
       angular.element(ele.target).removeClass("colorbarcolorhover");
@@ -297,20 +276,17 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         tot += wth;
         color.perc = wth;
       });
-      console.log($scope.colors);
-
     };
 
     // Get the current color based on the percentage - update light
-    $scope.findColor = function (perc){
-      console.log("FIND");
+    $scope.findColor = function (perc) {
       var ret = "bgc-gray";
       var lastperc = 0;
       angular.forEach($scope.colors, function(col, key) {
         if (lastperc <= perc && lastperc+col.perc > perc) {
           console.log("found one!");
           ret = "bglc-" + col.color;
-          var color = $("#color-" + key).css("backgroundColor");
+          var color = $("#color-" + key).css("color");
           console.log(color);
           var matchColors = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/;
           var match = matchColors.exec(color);
@@ -322,5 +298,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         lastperc += col.perc;
       });
       return ret;
+    };
+
+    // Change the defined percentages for the colors into px based flex basises
+    // Update on window width change and on data load from firebase
+    $scope.findFlexBasis = function () {
+      var computedmargin = $("#color-0").outerWidth() - $("#color-0").width();
+      angular.forEach($scope.colors, function(col, key) {
+        var containerWidth = $('.colorbar').width();
+        var colorbasis = (containerWidth * (col.perc / 100)) - computedmargin;
+        $("#color-" + key).css("flexBasis", colorbasis);
+      });
     };
 }]);

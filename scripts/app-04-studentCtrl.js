@@ -20,10 +20,10 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
           $scope.userData.$loaded(function () {
             $scope.myHeartbeat = $firebaseObject(lessonRef.child("Students").child($scope.userData.uid));
             // Setup a heartbeat loop
-            $scope.myHeartbeat.$value = Date();
+            $scope.myHeartbeat.$value = Date.now();
             $scope.myHeartbeat.$save();
             heartbeatIntervalPromise = $interval(function () {
-              $scope.myHeartbeat.$value = Date();
+              $scope.myHeartbeat.$value = Date.now();
               $scope.myHeartbeat.$save();
             }, 30000);
             $scope.currentAnswer = $firebaseObject(lessonRef.child("Topics").child($scope.classInfo.CurrentTopic).child("Answers").child($scope.userData.uid));

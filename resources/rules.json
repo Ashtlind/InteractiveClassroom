@@ -37,6 +37,9 @@
             "User": {
               ".write": "auth.uid === $user_id"
             },
+           	"Colors": {
+            ".write": "auth.uid === $user_id"
+            },
             "Classes": {
         			"Partakes": {
                 ".write": "auth.uid === $user_id"

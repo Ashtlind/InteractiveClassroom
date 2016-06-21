@@ -12,18 +12,6 @@ $gray: #EAEAEA
 $green: #8CDB65
 $red: #ED4E4E
 
-$lampViolet: #EE82EE
-$lampRoyalBlue: #4169E1
-$lampLightSkyBlue: $light-blue
-$lampAqua: #87CEFA
-$lampAquaMarine: #7FFFD4
-$lampGreen: $green
-$lampYellow: $yellow
-$lampOrange: #FFA500
-$lampRed: $red
-$lampFuchsia: #FF00FF
-$lampLavender: #E6E6FA
-
 $border-radius: 0.4rem
 $border-width: 0.3rem
 
@@ -524,7 +512,7 @@ select
 		height: 100%
 		position: relative
 		margin-right: 0.3rem
-		min-width: 100px
+		min-width: 40px
 		border-radius: $border-radius
 		overflow: hidden
 		flex: 1
@@ -637,30 +625,36 @@ select
 		transform: scale(0.9)
 
 .bglc-Transparent
+	color: rgb(0, 0, 0)
 	background-image: repeating-linear-gradient(45deg, transparent, transparent 1rem, rgba(255,255,255,.1) 1rem, rgba(255,255,255,.1) 2rem)
 	border: 0.3rem solid lighten($dark, 15%)
 .bglc-Violet
-	background-color: $lampViolet
+	color: rgb(238, 130, 238)
+	background-color: rgb(238, 130, 238)
 .bglc-RoyalBlue
-	background-color: $lampRoyalBlue
-.bglc-LightSkyBlue
-	background-color: $lampLightSkyBlue
+	color: rgb(0,0,255)
+	background-color: rgb(65, 105, 225)
 .bglc-Aqua
-	background-color: $lampAqua
-.bglc-AquaMarine
-	background-color: $lampAquaMarine
+	color: rgb(68, 139, 201)
+	background-color: rgb(135, 206, 250)
 .bglc-Green
-	background-color: $lampGreen
+	color: rgb(0,255,0)
+	background-color: $green
 .bglc-Yellow
-	background-color: $lampYellow
+	color: rgb(255, 255, 0)
+	background-color: $yellow
 .bglc-Orange
-	background-color: $lampOrange
+	color: rgb(255, 165, 0)
+	background-color: rgb(255, 153, 51)
 .bglc-Red
-	background-color: $lampRed
+	color: rgb(255,0,0)
+	background-color: $red
 .bglc-Fuchsia
-	background-color: $lampFuchsia
+	color: rgb(153, 51, 255)
+	background-color: rgb(179, 102, 255)
 .bglc-Lavender
-	background-color: $lampLavender
+	color: rgb(255, 255, 255)
+	background-color: rgb(230, 230, 250)
 
 .inline
 	display: inline

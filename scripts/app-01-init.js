@@ -47,3 +47,13 @@ app.directive('myEnter', function () {
         });
     };
 });
+// Driective for window horizontal resize
+app.directive('myResize', ['$window', function ($window) {
+    return function (scope, element, attrs) {
+        angular.element($window).bind('resize', function() {
+            scope.$apply(function (){
+                scope.$eval(attrs.gothing);
+            });
+          });
+    };
+}]);
