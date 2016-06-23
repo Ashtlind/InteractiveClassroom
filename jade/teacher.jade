@@ -1,23 +1,24 @@
 .fullpagecentercont(my-resize gothing="findFlexBasis()")
-  .answ-cont
-    .answ.answ-true
-      .answ-bottom-border
-      h1 {{ Answers.zero }}
-    .answ.answ-false
-      h1 {{ Answers.one }}
   header
     h1 {{classPub.Name}}
-    p {{Answers | json}}
-    p {{Students | json}}
-    p {{Topic | json}}
-    button(ng-click="findFlexBasis()") Test
-    input(ng-model="fakeperc")
+    h5.plain There is currently&nbsp;
+      u {{Students.StudentTotal}}
+      | &nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;
+      u {{Answers.Perc}}%
+      | &nbsp;of which understand the current topic.
+  .answ-cont
+    .answ.answ-false(answtitle="Confused")
+      h1 {{ Answers.zero }}
+    .answ.answ-mid(answtitle="Getting there")
+      h1 {{ Answers.one }}
+    .answ.answ-true(answtitle="Understand")
+      h1 {{ Answers.two }}
   .colorbarcont
     span.material-icons.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
       span(ng-if="!colorbarselect" class="dark") edit
       span(ng-if="colorbarselect" class="light") close
     .colorbarindicatorcont
-      .colorbarindicator.material-icons(style="left: {{fakeperc}}%") lightbulb_outline
+      .colorbarindicator.material-icons(style="left: {{Answers.Perc}}%") lightbulb_outline
     .colorbarselector(ng-show="colorbarselect")
       .colorbarselect(ng-repeat="color in avalicolors" data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorStart', onStop:'draggingColorStop'}" class="bglc-{{color}}" ng-model="color")
       .colorbarselect(data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorRemoveStart', onStop:'draggingColorRemoveStop'}" class="removecolor" ng-model="removeColor")

@@ -30,9 +30,15 @@ body
 	color: $dark
 	margin: 0
 
+header
+	width: 100%
+
 h1, h2, h3, h4
 	font-family: 'Permanent Marker', cursive
 	margin-bottom: $margin-heading
+	margin-top: 0
+
+h5, h6
 	margin-top: 0
 
 @mixin heading-size($size)
@@ -508,7 +514,7 @@ select
 	.colorbarcoloraddl
 		left: 0
 	.colorbarcolor
-		transition: all 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
+		transition: all 0.3s ease-out
 		height: 100%
 		position: relative
 		margin-right: 0.3rem
@@ -547,6 +553,10 @@ select
 	to
 		opacity: 1
 
+.answ-cont
+	width: 100%
+	display: flex
+	justify-content: space-around
 .answ
 	&::after
 		width: 69%
@@ -560,6 +570,7 @@ select
 		border-width: 0.3rem
 		border-style: solid
 		line-height: 1.1rem
+	float: left
 	border-radius: 50%
 	width: 150px
 	height: 150px
@@ -575,49 +586,25 @@ select
 .answ-true
 	color: $green
 	border: 0.3rem solid $green
-	float: left
-	margin-left: 10%
-	&.ng-hide-remove
-		animation: truehide 0.7s ease-in-out reverse
-	&.ng-hide-add
-		animation: truehide 0.7s ease-in-out
 	&::after
 		background-color: lighten($green, 15%)
 		border-top-color: $green
-		content: "Understand"
+		content: attr(answtitle)
+.answ-mid
+	color: $dark
+	border: 0.3rem solid $dark
+	&::after
+		background-color: lighten($dark, 15%)
+		border-top-color: $dark
+		content: attr(answtitle)
 .answ-false
 	color: $red
 	border: 0.3rem solid $red
-	float: right
-	margin-right: 10%
-	&.ng-hide-remove
-		animation: falsehide 0.7s ease-in-out reverse
-	&.ng-hide-add
-		animation: falsehide 0.7s ease-in-out
 	&::after
 		background-color: lighten($red, 15%)
 		border-top-color: $red
-		content: "Confused"
-.answ-cont
-	z-index: 50
-	width: 100%
+		content: attr(answtitle)
 
-@keyframes truehide
-	from
-		margin-left: 10%
-		opacity: 1
-	to
-		margin-left: -100%
-		opacity: 0
-
-
-@keyframes falsehide
-	from
-		margin-right: 10%
-		opacity: 1
-	to
-		margin-right: -100%
-		opacity: 0
 
 .csr
 	cursor: pointer
