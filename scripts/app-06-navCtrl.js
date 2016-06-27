@@ -7,6 +7,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
+      console.log(authData);
       $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid).child("User"));
       $rootScope.userData.$loaded(function () {
         $rootScope.userData.uid = authData.uid;
@@ -139,20 +140,22 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     $scope.navitemsteaches = new Array();
     if (newVal != undefined && newVal != null) {
       angular.forEach(newVal, function (teach, key) {
-        var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
-        theClass.$loaded(function () {
-          var active = false;
-          if (theClass.CurrentLesson != "") {
-            active = true;
-          }
-          $scope.navitemsteaches.push({
-            "icon" : "stars",
-            "link" : "#/dashboard:" + key,
-            "active" : active,
-            "fb" : theClass
+        if (teach.Date != undefined && teach.Date != "") {
+          var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
+          theClass.$loaded(function () {
+            var active = false;
+            if (theClass.CurrentLesson != "") {
+              active = true;
+            }
+            $scope.navitemsteaches.push({
+              "icon" : "stars",
+              "link" : "#/dashboard:" + key,
+              "active" : active,
+              "fb" : theClass
+            });
+            $scope.itemsUpdate();
           });
-          $scope.itemsUpdate();
-        });
+        }
       });
     } else {
       $scope.itemsUpdate();

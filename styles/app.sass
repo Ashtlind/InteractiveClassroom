@@ -91,7 +91,7 @@ button
 		color: $light
 		text-transform: uppercase
 		border: solid $border-width $dark
-		border-radius: $border-radius
+		border-radius: 3.4rem
 		padding: 0.8rem 1.2rem
 		transition: all 0.2s ease-in-out
 		&:hover
@@ -245,8 +245,8 @@ button
 		font-weight: bold
 		text-transform: uppercase
 		border: solid $border-width $dark
-		border-top-left-radius: $border-radius
-		border-bottom-left-radius: $border-radius
+		border-top-left-radius: 3.4rem
+		border-bottom-left-radius: 3.4rem
 		border-right-style: none
 		text-align: center
 		font-size: 1.5em
@@ -345,16 +345,15 @@ select
 	border-radius: $border-radius * 3
 	position: relative
 	overflow: hidden
-	cursor:
-	&::before
+	padding: $border-radius / 2 $border-radius / 1.5
+	.stufacesselectbar
+		transition: all 0.3s cubic-bezier(0.42, 0, 0.22, 1.18)
 		height: $border-radius * 2
 		width: 33.333333%
-		left: $border-radius / 1.5
-		top: $border-radius / 2
 		background-color: $light
 		border-radius: $border-radius * 2
 		content: ""
-		position: absolute
+		position: relative
 
 .colorbarcont
 	position: absolute

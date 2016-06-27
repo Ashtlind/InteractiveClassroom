@@ -109,21 +109,27 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
 
   // Create from invite text field
   $scope.createClass = function () {
-    var classes = $firebaseArray(root.child("Classes"));
-    classes.$add({
-      "Pub" : {
-        "CurrentLesson" : null,
-        "CurrentTopic" : null,
-        "Name" : $scope.invitecode,
-        "Teacher" : $scope.userData.uid
-      },
-      "Lessons" : null
-    }).then(function (newRef) {
-      if ($scope.userData.Teaches[newRef.key()] == undefined && $scope.userData.Teaches[newRef.key()] != null) {
-        $scope.userData.Teaches[newRef.key()] = Date();
-        $scope.userData.$save();
-      }
-      $location.path('/dashboard:' + newRef.key());
+    // Add the class guid to teaches under the user
+    var userTeaches = $firebaseArray(root.child("Users").child($scope.userData.uid).child("Classes").child("Teaches"));
+    var newAdd = userTeaches.$add({
+      "Date": ""
+    }).then(function(ref) {
+      var classGUID = ref.path.o[ref.path.o.length-1];
+      // Add the class and set the teacher
+      var theClass = $firebaseObject(root.child("Classes").child(classGUID));
+      theClass.Pub = {
+          "CurrentLesson" : null,
+          "CurrentTopic" : null,
+          "Name" : $scope.invitecode,
+          "Teacher" : $scope.userData.uid
+        };
+      theClass.$save().then(function (newRef) {
+        // Update the date on the users/classes/teaches to update the nav listener
+        var teachesClassIndex = userTeaches.$indexFor(classGUID);
+        userTeaches[teachesClassIndex].Date = Date.now();
+        userTeaches.$save(teachesClassIndex);
+        $location.path('/dashboard:' + classGUID);
+      });
     });
   };
   // Join from invite text field
@@ -132,18 +138,22 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
       var joiner = $firebaseObject(root.child("Joiners").child($scope.invitecode));
       joiner.$loaded(function () {
         if (joiner != null && joiner != undefined) {
+          // Now get the users /Classes
+          var userClasses = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Classes"));
           // Check if user partakes or teaches class - if not add it
-          if ($scope.userData.Partakes == undefined)
-            $scope.userData.Partakes = {};
-          if ($scope.userData.Partakes[joiner.Class] == undefined) {
-            $scope.userData.Partakes[joiner.Class] = Date();
-            $scope.userData.$save();
-          }
-          if ($scope.userData.Teaches != undefined && $scope.userData.Teaches[joiner.Class] != undefined) {
-            $location.path('/dashboard:' + joiner.Class);
-          } else {
-            $location.path('/class:' + joiner.Class);
-          }
+          userClasses.$loaded(function () {
+            if (userClasses.Partakes == undefined)
+              userClasses.Partakes = {};
+            if (userClasses.Partakes[joiner.Class] == undefined) {
+              userClasses.Partakes[joiner.Class] = Date();
+              userClasses.$save();
+            }
+            if (userClasses.Teaches != undefined && userClasses.Teaches[joiner.Class] != undefined) {
+              $location.path('/dashboard:' + joiner.Class);
+            } else {
+              $location.path('/class:' + joiner.Class);
+            }
+          });
         }
       });
     }

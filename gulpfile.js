@@ -181,7 +181,8 @@ gulp.task('webserver', function() {
   gulp.src(paths.webRoot)
     .pipe(webserver({
       livereload: true,
-      open: true
+      open: true,
+      host: "172.16.12.57"
     }));
 });
 

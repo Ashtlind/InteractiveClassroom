@@ -1,9 +1,8 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', '$interval', '$timeout', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef, $interval, $timeout) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', '$interval', '$timeout', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef, $interval, $timeout, cfpLoadingBar) {
     var root = fbRef;
 
     $scope.classid = $routeParams.classid.substring(1);
     var classRef = root.child("Classes").child($scope.classid);
-
 
     // HUE Experiments
     // Get all lights
@@ -47,27 +46,32 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       return [fx,fy];
     };
 
-    $scope.testthethings = function (r,g,b) {
-      myHue.getLights().then(function(lights) {
-        $scope.lights = lights;
-        // Switch light 1 on
-        var xy = $scope.convertRGBtoXY(r,g,b);
-        myHue.setLightState(1, {"on": true, "xy": xy, "transitiontime": 0}).then(function(response) {
-          //$scope.lights[1].state.on = false;
-          console.log('API response: ', response);
-        });
+    $scope.setHueColor = function (r,g,b) {
+      var on = true;
+      if (r<=0 && g<=0 && b<=0)
+        on = false;
+      var xy = $scope.convertRGBtoXY(r,g,b);
+      myHue.setLightState(1, {"on": on, "bri": 254, "xy": xy, "transitiontime": 0}).then(function(response) {
+        //$scope.lights[1].state.on = false;
+        console.log('API response: ', response);
       });
     };
 
     // Get the user's guid initially and subscribe to changes
-    $rootScope.$broadcast('userGuidReq');
+    cfpLoadingBar.start();
     $scope.$on('userGuid', function (event, guid) {
       if (guid == undefined || guid == null) {
         $scope.userData = {};
+        $scope.colorsLive = {};
+        $scope.colors = {};
+        $scope.classPub = {};
       } else {
+        $scope.userData = {};
+        $scope.colorsLive = {};
+        $scope.colors = {};
+        $scope.classPub = {};
         // Init some controller globals
         $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
-
         // Load the color profile for hue
         $scope.colorsLive = $firebaseObject(root.child("Users").child(guid).child("Colors"));
         $scope.colorsLive.$loaded(function () {
@@ -89,7 +93,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           angular.forEach($scope.colorsLive, function (color, key) {
             $scope.colorsLiveLength += 1;
             if ($scope.colors[key] != undefined && ($scope.colors[key].color != color.color || $scope.colors[key].perc != color.perc)) {
-              console.log("Change detect", color, $scope.colors[key]);
               $scope.colors[key].color = color.color;
               $scope.colors[key].perc = color.perc;
             }
@@ -100,10 +103,11 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           }
           $scope.findFlexBasis();
         });
-
         $scope.classPub = $firebaseObject(classRef.child("/Pub"));
+        cfpLoadingBar.complete();
       }
     });
+    $rootScope.$broadcast('userGuidReq');
 
     // Check the student list every 30 seconds to see if there are any students that are not active
     var activeStudentsIntervalPromise = $interval(function () {
@@ -137,18 +141,28 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     };
 
     // Get class info and setup the basic structure
-    $scope.$watch('classPub', function (newVal, oldVal){
+    $scope.$watch('classPub', function (newVal, oldVal) {
       if (newVal != undefined && newVal.CurrentLesson != undefined) {
+        // Check if there is a current lesson or if the last has expired
+
+
+        if (newVal.Lessons == undefined || newVal) {
+          
+        }
+
         // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
-        if (oldVal == undefined || (newVal.CurrentLesson != oldVal.CurrentLesson)) {
+        if (oldVal == undefined || (newVal.CurrentLesson != oldVal.CurrentLesson) || (newVal.CurrentLesson === oldVal.CurrentLesson)) {
           // Update the lesson and students once the lesson has changed
+          if ($scope.Students == undefined) {
+            $scope.Students = {};
+          }
           $scope.Students.ActiveList = new Array();
           $scope.Students.List = $firebaseArray(classRef.child("Lessons").child(newVal.CurrentLesson).child("Students"));
           $scope.Students.List.$watch(function (event) {
             $scope.updateActiveStudents();
           });
         }
-        if (oldVal == undefined || (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined)) {
+        if (oldVal == undefined || (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined) || (newVal.CurrentLesson === oldVal.CurrentLesson)) {
           // Update the current topic on change
           $scope.Topic = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
           console.log($scope.Topic);
@@ -204,19 +218,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         return 's'
     }
 
-
-    // *** old stuff below ***
-    // *** old stuff below ***
-    // *** old stuff below ***
-    $scope.$watch('lampSel', function(newVal) {
-        angular.forEach($scope.Lamps, function (lamp, key) {
-            if (newVal == lamp) {
-                $scope.Settings.Lamp = key;
-                $scope.Settings.$save();
-            }
-        });
-
-    });
     $scope.createNewLesson = function() {
         // Create lesson with a new session
         var newLessonRef = new Firebase($scope.fbRefClass + "/Lessons");
@@ -243,7 +244,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.Settings.$save();
     };
 
-    $scope.createNewSession = function ()
+    $scope.createNewTopic = function ()
     {
         // Set the current lesson in settings
         var newSessionRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions");
@@ -294,7 +295,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         }, 600);
       }
     }, true);
-
 
     $scope.draggingColor = false;
     $scope.draggingColorStart = function () {
@@ -374,15 +374,12 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         var lastperc = 0;
         angular.forEach($scope.colors, function(col, key) {
           if (lastperc <= $scope.Answers.Perc && lastperc+col.perc > $scope.Answers.Perc) {
-            console.log("found one!");
             ret = "bglc-" + col.color;
             var color = $("#color-" + key).css("color");
-            console.log(color);
             var matchColors = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/;
             var match = matchColors.exec(color);
             if (match !== null) {
-                console.log('Red: ' + match[1] + ' Green: ' + match[2] + ' Blue: ' + match[3]);
-                $scope.testthethings(match[1],match[2],match[3]);
+                $scope.setHueColor(match[1],match[2],match[3]);
             }
           }
           lastperc += col.perc;

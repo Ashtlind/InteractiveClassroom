@@ -27,6 +27,11 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
               $scope.myHeartbeat.$save();
             }, 30000);
             $scope.currentAnswer = $firebaseObject(lessonRef.child("Topics").child($scope.classInfo.CurrentTopic).child("Answers").child($scope.userData.uid));
+            $scope.currentAnswer.$loaded(function () {
+              if ($scope.currentAnswer.Answer == undefined) {
+                $scope.answer(1);
+              }
+            });
             cfpLoadingBar.complete();
           });
         });
@@ -35,6 +40,19 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
     $rootScope.$broadcast('userGuidReq');
 
     $scope.$on('$destroy', function () { $interval.cancel(heartbeatIntervalPromise); });
+
+    $scope.getLeft = function () {
+      switch ($scope.currentAnswer.Answer) {
+        case 0:
+          return 66.666;
+          break;
+        case 2:
+          return 0;
+          break;
+        default:
+          return 33.333;
+      }
+    };
 
     $scope.answer = function (answer) {
       $scope.currentAnswer.Answer = answer;

@@ -2,12 +2,13 @@
   header
     h1 {{classInfo.Name}}
   .stufaces
-    .stuface
+    .stuface(ng-click="answer(2)")
       include ../svg/happyFace.svg
-    .stuface
+    .stuface(ng-click="answer(1)")
       include ../svg/BlankFace.svg
-    .stuface
+    .stuface(ng-click="answer(0)")
       include ../svg/ConfusedFace.svg
   .stufacesselect
+    .stufacesselectbar(style="left: {{getLeft()}}%")
 
 p {{currentAnswer | json}}
