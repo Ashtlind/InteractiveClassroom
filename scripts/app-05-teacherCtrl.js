@@ -89,7 +89,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           // On changes to the live color - Syncronise to the local array
           var tempList = new Array();
           $scope.colorsLiveLength = 0;
-          console.log("top");
           angular.forEach($scope.colorsLive, function (color, key) {
             $scope.colorsLiveLength += 1;
             if ($scope.colors[key] != undefined && ($scope.colors[key].color != color.color || $scope.colors[key].perc != color.perc)) {
@@ -104,10 +103,55 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           $scope.findFlexBasis();
         });
         $scope.classPub = $firebaseObject(classRef.child("/Pub"));
+        $scope.classPub.$loaded(function () {
+          // Check if there is a current lesson or if the last has expired (2 hours)
+          if ($scope.classPub.CurrentLesson == undefined || $scope.classPub.CurrentLesson.uid == "" || $scope.classPub.CurrentLesson.Date <= (Date.now() - (60000*60))) {
+            // Create new lesson and topic set it as the current lesson
+            if ($scope.classPub.CurrentLesson == undefined)
+              $scope.classPub.CurrentLesson = {};
+            if ($scope.classPub.CurrentTopic == undefined)
+              $scope.classPub.CurrentTopic = {};
+            var lessons = $firebaseArray(classRef.child("Lessons"));
+            var lessonDate = Date.now();
+            lessons.$add({
+              "Date": lessonDate
+            }).then(function (ref) {
+              $scope.classPub.CurrentLesson.uid = ref.key;
+              $scope.classPub.CurrentLesson.Date = lessonDate;
+              var topic = $firebaseArray(classRef.child("Lessons").child(ref.key).child("Topics"));
+              var topicDate = Date.now();
+              topic.$add({
+                "Date": topicDate
+              }).then(function (ref) {
+                $scope.classPub.CurrentTopic.uid = ref.key;
+                $scope.classPub.CurrentTopic.Date = topicDate;
+                $scope.classPub.$save();
+              });
+            });
+          }
+        });
         cfpLoadingBar.complete();
       }
     });
     $rootScope.$broadcast('userGuidReq');
+
+    $scope.createNewTopic = function () {
+      // Check if there is a current lesson or if the last has expired (2 hours)
+      if ($scope.classPub.CurrentLesson.uid != "") {
+        // Create new topic set it as the current topic
+        if ($scope.classPub.CurrentTopic == undefined)
+          $scope.classPub.CurrentTopic = {};
+        var topic = $firebaseArray(classRef.child("Lessons").child($scope.classPub.CurrentLesson.uid).child("Topics"));
+        var topicDate = Date.now();
+        topic.$add({
+          "Date": topicDate
+        }).then(function (ref) {
+          $scope.classPub.CurrentTopic.uid = ref.key;
+          $scope.classPub.CurrentTopic.Date = topicDate;
+          $scope.classPub.$save();
+        });
+      }
+    }
 
     // Check the student list every 30 seconds to see if there are any students that are not active
     var activeStudentsIntervalPromise = $interval(function () {
@@ -140,38 +184,40 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       }
     };
 
+    $scope.$watch('Students.List', function (newVal, oldVal) {
+      $scope.updateActiveStudents();
+    }, true);
     // Get class info and setup the basic structure
-    $scope.$watch('classPub', function (newVal, oldVal) {
-      if (newVal != undefined && newVal.CurrentLesson != undefined) {
-        // Check if there is a current lesson or if the last has expired
-
-
-        if (newVal.Lessons == undefined || newVal) {
-          
-        }
-
+    $scope.$watch('classPub.CurrentLesson', function (newVal, oldVal) {
+      if (newVal != undefined && newVal.uid != undefined) {
         // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
-        if (oldVal == undefined || (newVal.CurrentLesson != oldVal.CurrentLesson) || (newVal.CurrentLesson === oldVal.CurrentLesson)) {
+        if (oldVal == undefined || (newVal != oldVal) || (newVal === oldVal)) {
           // Update the lesson and students once the lesson has changed
+          console.log("Update Lesson");
+          console.log(newVal);
           if ($scope.Students == undefined) {
             $scope.Students = {};
           }
           $scope.Students.ActiveList = new Array();
-          $scope.Students.List = $firebaseArray(classRef.child("Lessons").child(newVal.CurrentLesson).child("Students"));
-          $scope.Students.List.$watch(function (event) {
-            $scope.updateActiveStudents();
-          });
-        }
-        if (oldVal == undefined || (newVal.CurrentTopic != oldVal.CurrentTopic && newVal.CurrentTopic != undefined) || (newVal.CurrentLesson === oldVal.CurrentLesson)) {
-          // Update the current topic on change
-          $scope.Topic = $firebaseObject(classRef.child("Lessons").child(newVal.CurrentLesson).child("Topics").child(newVal.CurrentTopic));
-          console.log($scope.Topic);
-          $scope.Topic.$loaded(function () {
-            console.log($scope.Topic);
-          });
+          // Student list changes are listened for in a scope deep watch
+          $scope.Students.List = $firebaseArray(classRef.child("Lessons").child(newVal.uid).child("Students"));
         }
       } else {
+        console.log("Destory students");
         $scope.Students = {};
+      }
+    });
+    $scope.$watch('classPub.CurrentTopic', function (newVal, oldVal) {
+      if (newVal != undefined && newVal.uid != undefined) {
+        // If any info is changed or loaded in the class/Pub dir refresh the other watched objects related to it
+        if (oldVal == undefined || (newVal != oldVal) || (newVal === oldVal)) {
+          console.log("Update Topic");
+          console.log(newVal);
+          // Update the current topic on change
+          $scope.Topic = $firebaseObject(classRef.child("Lessons").child($scope.classPub.CurrentLesson.uid).child("Topics").child(newVal.uid));
+        }
+      } else {
+        console.log("Destory topic");
         $scope.Topic = {};
       }
     });
@@ -217,56 +263,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       if(numb>1 || numb==0)
         return 's'
     }
-
-    $scope.createNewLesson = function() {
-        // Create lesson with a new session
-        var newLessonRef = new Firebase($scope.fbRefClass + "/Lessons");
-
-        var lesson = {
-            'Date': Date(),
-            'Students': null
-        };
-        var theNewLesson = newLessonRef.push(les);
-
-        // Set the current lesson in settings
-        var newSessionRef = new Firebase(theNewLesson.toString() + "/Sessions");
-        var sesh = {
-            'Date': Date(),
-            'StudentCount': $scope.stuCount,
-            'TrueCount': 0,
-            'FalseCount': 0
-        };
-        var theNewSession = newSessionRef.push(sesh);
-
-        // Change the settings to reflect the change
-        $scope.Settings.CurrentLesson = theNewLesson.key();
-        $scope.Settings.CurrentSession = theNewSession.key();
-        $scope.Settings.$save();
-    };
-
-    $scope.createNewTopic = function ()
-    {
-        // Set the current lesson in settings
-        var newSessionRef = new Firebase($scope.fbRefClass + "/Lessons/" + $scope.Settings.CurrentLesson + "/Sessions");
-        var sesh = {
-            'Date': Date(),
-            'StudentCount': $scope.stuCount,
-            'TrueCount': 0,
-            'FalseCount': 0
-        };
-        var theNewSession = newSessionRef.push(sesh);
-
-        // Change the settings to reflect the change
-        $scope.Settings.CurrentSession = theNewSession.key();
-        $scope.Settings.$save();
-    }
-
-    $scope.finishLesson = function () {
-        $scope.Settings.CurrentSession = "";
-        $scope.Settings.CurrentLesson = "";
-        $scope.Settings.$save();
-        $scope.CurrentSession = {};
-    };
 
     // Colors and settings
     $scope.colors = new Array();

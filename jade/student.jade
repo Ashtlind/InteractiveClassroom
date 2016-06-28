@@ -2,11 +2,11 @@
   header
     h1 {{classInfo.Name}}
   .stufaces
-    .stuface(ng-click="answer(2)")
+    .stuface(ng-click="answer(2)" ng-class="{'stufaceactive':currentAnswer.Answer==2}")
       include ../svg/happyFace.svg
-    .stuface(ng-click="answer(1)")
+    .stuface(ng-click="answer(1)" ng-class="{'stufaceactive':currentAnswer.Answer==1}")
       include ../svg/BlankFace.svg
-    .stuface(ng-click="answer(0)")
+    .stuface(ng-click="answer(0)" ng-class="{'stufaceactive':currentAnswer.Answer==0}")
       include ../svg/ConfusedFace.svg
   .stufacesselect
     .stufacesselectbar(style="left: {{getLeft()}}%")

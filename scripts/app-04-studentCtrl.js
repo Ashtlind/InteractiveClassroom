@@ -3,7 +3,6 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
 
     $scope.classid = $routeParams.classid.substring(1);
 
-    $scope.classInfo = $firebaseObject(root.child("Classes").child($scope.classid).child("/Pub"));
     $scope.currentAnswer = {};
     var heartbeatIntervalPromise = {};
 
@@ -14,24 +13,10 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
         $scope.userData = {};
       } else {
         // Init user based scope vars
-        $scope.classInfo.$loaded(function () {
-          var lessonRef = root.child("Classes").child($scope.classid).child("Lessons").child($scope.classInfo.CurrentLesson);
-          $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
-          $scope.userData.$loaded(function () {
-            $scope.myHeartbeat = $firebaseObject(lessonRef.child("Students").child($scope.userData.uid));
-            // Setup a heartbeat loop
-            $scope.myHeartbeat.$value = Date.now();
-            $scope.myHeartbeat.$save();
-            heartbeatIntervalPromise = $interval(function () {
-              $scope.myHeartbeat.$value = Date.now();
-              $scope.myHeartbeat.$save();
-            }, 30000);
-            $scope.currentAnswer = $firebaseObject(lessonRef.child("Topics").child($scope.classInfo.CurrentTopic).child("Answers").child($scope.userData.uid));
-            $scope.currentAnswer.$loaded(function () {
-              if ($scope.currentAnswer.Answer == undefined) {
-                $scope.answer(1);
-              }
-            });
+        $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
+        $scope.userData.$loaded(function () {
+          $scope.classInfo = $firebaseObject(root.child("Classes").child($scope.classid).child("/Pub"));
+          $scope.classInfo.$loaded(function () {
             cfpLoadingBar.complete();
           });
         });
@@ -39,7 +24,43 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
     });
     $rootScope.$broadcast('userGuidReq');
 
+    // Setup a heartbeat loop
+    heartbeatIntervalPromise = $interval(function () {
+      if ($scope.myHeartbeat != undefined) {
+        $scope.myHeartbeat.$value = Date.now();
+        $scope.myHeartbeat.$save();
+      }
+    }, 30000);
+
     $scope.$on('$destroy', function () { $interval.cancel(heartbeatIntervalPromise); });
+
+    $scope.$watch("classInfo.CurrentLesson", function (newVal, oldVal) {
+      if (newVal != undefined) {
+        // Get the referance point for the current lesson based on class info
+        $scope.lessonRef = root.child("Classes").child($scope.classid).child("Lessons").child($scope.classInfo.CurrentLesson.uid);
+
+        // Set the heartbeat location based on the current lesson
+        $scope.myHeartbeat = $firebaseObject($scope.lessonRef.child("Students").child($scope.userData.uid));
+        $scope.myHeartbeat.$value = Date.now();
+        $scope.myHeartbeat.$save();
+      }
+    });
+
+    $scope.updateCurrentTopic = function () {
+      // Set the current answering location based on the current lesson and topic
+      // Future if needed - Make sure that we are in the current lesson, as topic and lesson could technicaly update out of order
+      $scope.currentAnswer = $firebaseObject($scope.lessonRef.child("Topics").child($scope.classInfo.CurrentTopic.uid).child("Answers").child($scope.userData.uid));
+      $scope.currentAnswer.$loaded(function () {
+        if ($scope.currentAnswer.Answer == undefined) {
+          $scope.answer(1);
+        }
+      });
+    };
+    $scope.$watch("classInfo.CurrentTopic", function (newVal, oldVal) {
+      if (newVal != undefined) {
+        $scope.updateCurrentTopic();
+      }
+    });
 
     $scope.getLeft = function () {
       switch ($scope.currentAnswer.Answer) {

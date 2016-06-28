@@ -6,6 +6,7 @@
       | &nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;
       u {{Answers.Perc}}%
       | &nbsp;of which understand the current topic.
+    button.btn(ng-click="createNewTopic()") New Topic
   .answ-cont
     .answ.answ-false(answtitle="Confused")
       h1 {{ Answers.zero }}
