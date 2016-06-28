@@ -43,7 +43,8 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
         $scope.myHeartbeat = $firebaseObject($scope.lessonRef.child("Students").child($scope.userData.uid));
         $scope.myHeartbeat.Date = Date.now();
         // Also set our profile picture path for easy access in the teacher dashboard
-        $scope.myHeartbeat.ProfilePicture = $scope.userData.profileImageURL;
+        if ($scope.userData.profileImageURL != undefined)
+          $scope.myHeartbeat.ProfilePicture = $scope.userData.profileImageURL;
         $scope.myHeartbeat.$save();
       }
     });

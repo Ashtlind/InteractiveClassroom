@@ -235,10 +235,13 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
             if ($scope.Topic.Answers[student.$id] != undefined) {
               $scope.Answers.Total += 1;
               if ($scope.Topic.Answers[student.$id].Answer < 1) {
+                student.Answer = 0;
                 $scope.Answers.zero += 1;
               } else if ($scope.Topic.Answers[student.$id].Answer < 2) {
+                student.Answer = 1;
                 $scope.Answers.one += 1;
               } else if ($scope.Topic.Answers[student.$id].Answer < 3) {
+                student.Answer = 2;
                 $scope.Answers.two += 1;
               }
             }
@@ -355,14 +358,12 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
 
     // Recalculates percentages for the colors - triggered on mouse up for resizing and on adding / remove
     $scope.recalcColor = function () {
-      $(document).ready(function () {
-        var containerWidth = $('.colorbar').width();
-        var tot = 0;
-        angular.forEach($scope.colors, function (color, key){
-          var wth = ($('#color-' + key).outerWidth(true) / containerWidth) * 100;
-          tot += wth;
-          color.perc = wth;
-        });
+      var containerWidth = $('.colorbar').width();
+      var tot = 0;
+      angular.forEach($scope.colors, function (color, key){
+        var wth = ($('#color-' + key).outerWidth(true) / containerWidth) * 100;
+        tot += wth;
+        color.perc = wth;
       });
     };
 
