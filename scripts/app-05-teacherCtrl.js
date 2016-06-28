@@ -17,7 +17,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       // Switch light 1 on
       myHue.setLightState(1, {"on": true}).then(function(response) {
         //$scope.lights[1].state.on = false;
-        console.log('API response: ', response);
+        //console.log('API response: ', response);
       });
     });
 
@@ -166,7 +166,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         angular.forEach($scope.Students.List, function(student) {
           // If student client has checked in in the last ~1.15 minutes - add them to the current participating students
           var activeIndex = $scope.Students.ActiveList.indexOf(student);
-          if (student.$value >= Date.now() - 70000) {
+          if (student.Date >= Date.now() - 70000) {
             totalStudents += 1;
             // Check if the student is in the active array - if not add them
             if (activeIndex < 0) {
@@ -235,22 +235,28 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
             if ($scope.Topic.Answers[student.$id] != undefined) {
               $scope.Answers.Total += 1;
               if ($scope.Topic.Answers[student.$id].Answer < 1) {
+                student.Answer = 0;
                 $scope.Answers.zero += 1;
               } else if ($scope.Topic.Answers[student.$id].Answer < 2) {
+                student.Answer = 1;
                 $scope.Answers.one += 1;
               } else if ($scope.Topic.Answers[student.$id].Answer < 3) {
+                student.Answer = 2;
                 $scope.Answers.two += 1;
               }
             }
           });
         }
         // Calculate the total percentage for the hue light to be based off
+        var newPerc = 0;
         if ($scope.Students.StudentTotal > 0) {
-          $scope.Answers.Perc = 100 / ($scope.Students.StudentTotal / $scope.Answers.two);
-        } else {
-          $scope.Answers.Perc = 0;
+          newPerc = 100 / ($scope.Students.StudentTotal / $scope.Answers.two);
         }
-        $scope.findColor();
+        // find the color and update the scope variable if the percentage has changed
+        if ($scope.Answers.Perc != newPerc) {
+          $scope.Answers.Perc = newPerc;
+          $scope.findColor();
+        }
       } else {
         $scope.Answers = {Perc:0};
       }
@@ -352,14 +358,12 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
 
     // Recalculates percentages for the colors - triggered on mouse up for resizing and on adding / remove
     $scope.recalcColor = function () {
-      $(document).ready(function () {
-        var containerWidth = $('.colorbar').width();
-        var tot = 0;
-        angular.forEach($scope.colors, function (color, key){
-          var wth = ($('#color-' + key).outerWidth(true) / containerWidth) * 100;
-          tot += wth;
-          color.perc = wth;
-        });
+      var containerWidth = $('.colorbar').width();
+      var tot = 0;
+      angular.forEach($scope.colors, function (color, key){
+        var wth = ($('#color-' + key).outerWidth(true) / containerWidth) * 100;
+        tot += wth;
+        color.perc = wth;
       });
     };
 

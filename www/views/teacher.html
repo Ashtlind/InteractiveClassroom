@@ -1,4 +1,4 @@
-<div my-resize="my-resize" gothing="findFlexBasis()" class="fullpagecentercont"><header><h1>{{classPub.Name}}</h1><h5 class="plain">There is currently&nbsp;<u>{{Students.StudentTotal}}</u>&nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;<u>{{Answers.Perc}}%</u>&nbsp;of which understand the current topic.</h5><button ng-click="createNewTopic()" class="btn">New Topic</button></header><div class="answ-cont"><div answtitle="Confused" class="answ answ-false"><h1>{{ Answers.zero }}</h1></div><div answtitle="Getting there" class="answ answ-mid"><h1>{{ Answers.one }}</h1></div><div answtitle="Understand" class="answ answ-true"><h1>{{ Answers.two }}</h1></div></div><div class="colorbarcont"><span ng-click="colorbarselect=!colorbarselect" class="material-icons opencolorbarselector"><span ng-if="!colorbarselect" class="dark">edit</span><span ng-if="colorbarselect" class="light">close</span></span><div class="colorbarindicatorcont"><div style="left: {{Answers.Perc}}%" class="colorbarindicator material-icons">lightbulb_outline</div></div><div ng-show="colorbarselect" class="colorbarselector"><div ng-repeat="color in avalicolors" data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorStart', onStop:'draggingColorStop'}" ng-model="color" class="colorbarselect bglc-{{color}}"></div><div data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorRemoveStart', onStop:'draggingColorRemoveStop'}" ng-model="removeColor" class="colorbarselect removecolor"><span class="material-icons">highlight_off</span></div></div><div class="colorbar"><div class="colorbarfacel"><?xml version="1.0" encoding="utf-8"?>
+<div my-resize="my-resize" gothing="findFlexBasis()" class="fullpagecentercont"><div class="stuprofpiccont stuprofpicconttop"><div ng-show="Answers.one&gt;0" class="stuprofpic stuprofpichead"><?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -37,6 +37,136 @@
 		s8.21-18.333,18.336-18.333S474.641,264.767,474.641,274.89"/>
 	
 		<line style="fill:none;stroke:#363842;stroke-width:27.2958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="239.904" y1="383.733" x2="351.177" y2="383.733"/>
+</g>
+</svg>
+</div><div ng-repeat="student in Students.ActiveList | filter: {Answer:1}" class="stuprofpic"><div ng-show="student.ProfilePicture==undefined" class="stuprofpic404">?</div><img ng-src="{{student.ProfilePicture}}"/></div></div><div class="stuprofpiccont stuprofpiccontleft"><div ng-show="Answers.zero&gt;0" class="stuprofpic stuprofpichead"><?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="600px" height="600px" viewBox="0 0 600 600" style="enable-background:new 0 0 600 600;" xml:space="preserve">
+<g>
+	<g style="opacity:0.3;">
+		<g>
+			<defs>
+				<rect id="SVGID_1_" x="67.282" y="573.794" width="463.409" height="23.209"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<path style="clip-path:url(#SVGID_2_);fill:#363842;" d="M530.69,585.396c0,6.407-103.737,11.607-231.705,11.607
+				c-127.966,0-231.704-5.2-231.704-11.607s103.738-11.602,231.704-11.602C426.953,573.794,530.69,578.988,530.69,585.396"/>
+		</g>
+	</g>
+	<path style="fill:#FFFFFF;" d="M580.855,295.665c0,154.356-125.137,279.496-279.496,279.496S21.864,450.021,21.864,295.665
+		C21.864,141.302,147,16.169,301.359,16.169S580.855,141.302,580.855,295.665"/>
+	<path style="fill:#D4E9CC;" d="M578.482,295.665c0,154.356-125.137,279.496-279.497,279.496
+		c-154.359,0-279.496-125.14-279.496-279.496c0,81.321,125.136,217.702,279.496,217.702
+		C453.346,513.367,578.482,380.207,578.482,295.665"/>
+	<path style="fill:#363842;" d="M298.986,585.402c-159.76,0-289.737-129.98-289.737-289.737
+		c0-159.764,129.977-289.737,289.737-289.737c159.76,0,289.737,129.974,289.737,289.737
+		C588.723,455.422,458.746,585.402,298.986,585.402 M298.986,26.41c-148.469,0-269.255,120.786-269.255,269.255
+		S150.517,564.92,298.986,564.92c148.469,0,269.255-120.786,269.255-269.255S447.455,26.41,298.986,26.41"/>
+	<path style="fill:#363842;" d="M158.024,274.729c0,10.128-8.21,18.342-18.342,18.342c-10.131,0-18.342-8.214-18.342-18.342
+		s8.211-18.342,18.342-18.342C149.814,256.388,158.024,264.602,158.024,274.729"/>
+	<path style="fill:#363842;" d="M474.878,274.729c0,10.128-8.215,18.342-18.346,18.342c-10.134,0-18.342-8.214-18.342-18.342
+		s8.211-18.342,18.346-18.342C466.663,256.388,474.878,264.602,474.878,274.729"/>
+	<path style="fill:#363842;" d="M375.474,405.137c-3.83,0-7.587-1.867-9.844-5.314c-0.434-0.627-12.285-17.555-37.471-17.555
+		c-13.278,0-19.839,4.493-28.14,10.181c-8.681,5.947-18.519,12.688-34.937,12.688c-32.604,0-51.462-26.81-52.249-27.95
+		c-3.684-5.341-2.34-12.661,3.004-16.349c5.334-3.68,12.618-2.34,16.312,2.954c0.257,0.36,12.958,17.835,32.934,17.835
+		c9.138,0,14.388-3.594,21.656-8.574c9.294-6.367,20.858-14.288,41.421-14.288c38.233,0,56.379,27.023,57.133,28.177
+		c3.561,5.427,2.04,12.715-3.388,16.268C379.918,404.51,377.681,405.137,375.474,405.137"/>
+	
+		<path style="fill:none;stroke:#D5E8CD;stroke-width:23.8958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M439.688,126.254c12.418,9.854,21.398,18.528,28.446,36.831"/>
+	
+		<path style="fill:none;stroke:#D5E8CD;stroke-width:23.8958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M387.215,95.424c0,0,9.771,3.9,20.93,8.821"/>
+</g>
+</svg>
+</div><div ng-repeat="student in Students.ActiveList | filter: {Answer:0}" class="stuprofpic"><div ng-show="student.ProfilePicture==undefined" class="stuprofpic404">?</div><img ng-src="{{student.ProfilePicture}}"/></div></div><div class="stuprofpiccont stuprofpiccontright"><div ng-show="Answers.two&gt;0" class="stuprofpic stuprofpichead"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="600px" height="600px" viewBox="0 0 600 600" style="enable-background:new 0 0 600 600;" xml:space="preserve">
+<g>
+	<g style="opacity:0.3;">
+		<g>
+			<defs>
+				<rect id="SVGID_1_" x="67.168" y="573.837" width="462.503" height="23.164"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<path style="clip-path:url(#SVGID_2_);fill:#363842;" d="M529.672,585.416c0,6.395-103.535,11.578-231.252,11.578
+				s-231.251-5.184-231.251-11.578c0-6.398,103.535-11.579,231.251-11.579S529.672,579.018,529.672,585.416"/>
+		</g>
+	</g>
+	<path style="fill:#FFFFFF;" d="M579.739,296.245c0,154.061-124.893,278.95-278.95,278.95c-154.058,0-278.95-124.889-278.95-278.95
+		c0-154.058,124.892-278.95,278.95-278.95C454.847,17.294,579.739,142.187,579.739,296.245"/>
+	<path style="fill:#F9F5D6;" d="M577.37,296.245c0,154.061-124.893,278.95-278.95,278.95S19.47,450.306,19.47,296.245
+		c0,81.163,124.892,217.281,278.95,217.281S577.37,380.621,577.37,296.245"/>
+	<path style="fill:#363842;" d="M298.42,585.416c-159.448,0-289.171-129.721-289.171-289.171
+		C9.249,136.8,138.972,7.073,298.42,7.073c159.448,0,289.171,129.727,289.171,289.171
+		C587.591,455.695,457.868,585.416,298.42,585.416 M298.42,27.516c-148.179,0-268.729,120.55-268.729,268.729
+		s120.55,268.729,268.729,268.729s268.729-120.55,268.729-268.729S446.599,27.516,298.42,27.516"/>
+	<path style="fill:#363842;" d="M296.367,412.243c-22.249,0-34.227-26.125-35.518-29.106c-1.693-3.906-0.652-8.457,2.575-11.239
+		c3.224-2.774,7.879-3.134,11.492-0.878c0.04,0.023,8.504,5.107,18.466,5.107c11.306,0,25.593-5.796,25.732-5.853
+		c3.653-1.497,7.846-0.64,10.617,2.173c2.765,2.805,3.569,7.01,2.02,10.64C330.48,386.068,318.656,412.243,296.367,412.243"/>
+	<path style="fill:#363842;" d="M435.739,287.395c1.37,1.926,3.973,2.322,5.969,1.064c3.214-2.023,7.007-3.201,11.086-3.201
+		c4.072,0,7.869,1.178,11.08,3.201c2.003,1.258,4.607,0.858,5.976-1.071c3.197-4.505,4.657-10.321,3.373-16.506
+		c-1.65-7.909-8.035-14.31-15.947-15.96c-13.498-2.801-25.376,7.426-25.376,20.429C431.899,279.842,433.323,283.994,435.739,287.395
+		"/>
+	<path style="fill:#363842;" d="M121.242,287.395c1.367,1.926,3.973,2.322,5.969,1.064c3.211-2.023,7.004-3.201,11.08-3.201
+		c4.079,0,7.872,1.178,11.08,3.201c2.006,1.258,4.611,0.858,5.982-1.071c3.194-4.505,4.651-10.321,3.367-16.506
+		c-1.647-7.909-8.032-14.31-15.944-15.96c-13.498-2.801-25.379,7.426-25.379,20.429
+		C117.396,279.842,118.826,283.994,121.242,287.395"/>
+
+		<path style="fill:none;stroke:#F9F7D9;stroke-width:23.8492;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M435.011,130.192c12.394,9.842,21.356,18.492,28.391,36.765"/>
+
+		<path style="fill:none;stroke:#F9F7D9;stroke-width:23.8492;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M382.644,99.429c0,0,9.749,3.886,20.889,8.804"/>
+</g>
+</svg>
+</div><div ng-repeat="student in Students.ActiveList | filter: {Answer:2}" class="stuprofpic"><div ng-show="student.ProfilePicture==undefined" class="stuprofpic404">?</div><img ng-src="{{student.ProfilePicture}}"/></div></div><header><h1>{{classPub.Name}}</h1><h5 class="plain">There is currently&nbsp;<u>{{Students.StudentTotal}}</u>&nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;<u>{{Answers.Perc | number : 1}}%</u>&nbsp;of which understand the current topic.</h5><button ng-click="createNewTopic()" class="btn">New Topic</button></header><div class="colorbarcont"><span ng-click="colorbarselect=!colorbarselect" class="material-icons opencolorbarselector"><span ng-if="!colorbarselect" class="dark">edit</span><span ng-if="colorbarselect" class="light">close</span></span><div class="colorbarindicatorcont"><div style="left: {{Answers.Perc}}%" class="colorbarindicator material-icons">lightbulb_outline</div></div><div ng-show="colorbarselect" class="colorbarselector"><div ng-repeat="color in avalicolors" data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorStart', onStop:'draggingColorStop'}" ng-model="color" class="colorbarselect bglc-{{color}}"></div><div data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorRemoveStart', onStop:'draggingColorRemoveStop'}" ng-model="removeColor" class="colorbarselect removecolor"><span class="material-icons">highlight_off</span></div></div><div class="colorbar"><div class="colorbarfacel"><?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="600px" height="600px" viewBox="0 0 600 600" style="enable-background:new 0 0 600 600;" xml:space="preserve">
+<g>
+	<g style="opacity:0.3;">
+		<g>
+			<defs>
+				<rect id="SVGID_1_" x="67.282" y="573.794" width="463.409" height="23.209"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<path style="clip-path:url(#SVGID_2_);fill:#363842;" d="M530.69,585.396c0,6.407-103.737,11.607-231.705,11.607
+				c-127.966,0-231.704-5.2-231.704-11.607s103.738-11.602,231.704-11.602C426.953,573.794,530.69,578.988,530.69,585.396"/>
+		</g>
+	</g>
+	<path style="fill:#FFFFFF;" d="M580.855,295.665c0,154.356-125.137,279.496-279.496,279.496S21.864,450.021,21.864,295.665
+		C21.864,141.302,147,16.169,301.359,16.169S580.855,141.302,580.855,295.665"/>
+	<path style="fill:#D4E9CC;" d="M578.482,295.665c0,154.356-125.137,279.496-279.497,279.496
+		c-154.359,0-279.496-125.14-279.496-279.496c0,81.321,125.136,217.702,279.496,217.702
+		C453.346,513.367,578.482,380.207,578.482,295.665"/>
+	<path style="fill:#363842;" d="M298.986,585.402c-159.76,0-289.737-129.98-289.737-289.737
+		c0-159.764,129.977-289.737,289.737-289.737c159.76,0,289.737,129.974,289.737,289.737
+		C588.723,455.422,458.746,585.402,298.986,585.402 M298.986,26.41c-148.469,0-269.255,120.786-269.255,269.255
+		S150.517,564.92,298.986,564.92c148.469,0,269.255-120.786,269.255-269.255S447.455,26.41,298.986,26.41"/>
+	<path style="fill:#363842;" d="M158.024,274.729c0,10.128-8.21,18.342-18.342,18.342c-10.131,0-18.342-8.214-18.342-18.342
+		s8.211-18.342,18.342-18.342C149.814,256.388,158.024,264.602,158.024,274.729"/>
+	<path style="fill:#363842;" d="M474.878,274.729c0,10.128-8.215,18.342-18.346,18.342c-10.134,0-18.342-8.214-18.342-18.342
+		s8.211-18.342,18.346-18.342C466.663,256.388,474.878,264.602,474.878,274.729"/>
+	<path style="fill:#363842;" d="M375.474,405.137c-3.83,0-7.587-1.867-9.844-5.314c-0.434-0.627-12.285-17.555-37.471-17.555
+		c-13.278,0-19.839,4.493-28.14,10.181c-8.681,5.947-18.519,12.688-34.937,12.688c-32.604,0-51.462-26.81-52.249-27.95
+		c-3.684-5.341-2.34-12.661,3.004-16.349c5.334-3.68,12.618-2.34,16.312,2.954c0.257,0.36,12.958,17.835,32.934,17.835
+		c9.138,0,14.388-3.594,21.656-8.574c9.294-6.367,20.858-14.288,41.421-14.288c38.233,0,56.379,27.023,57.133,28.177
+		c3.561,5.427,2.04,12.715-3.388,16.268C379.918,404.51,377.681,405.137,375.474,405.137"/>
+	
+		<path style="fill:none;stroke:#D5E8CD;stroke-width:23.8958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M439.688,126.254c12.418,9.854,21.398,18.528,28.446,36.831"/>
+	
+		<path style="fill:none;stroke:#D5E8CD;stroke-width:23.8958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
+		M387.215,95.424c0,0,9.771,3.9,20.93,8.821"/>
 </g>
 </svg>
 </div><div ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.left" class="colorbarcoloraddl"><span class="material-icons">add</span></div><section ng-repeat="(key, color) in colors" id="color-{{key}}" ng-if="!$last" resizable="resizable" r-directions="['right']" r-flex="true" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="color.color" ng-class="'bglc-'+color.color" ng-mouseup="recalcColor()" class="colorbarcolor"></section><section id="color-{{colors.length-1}}" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colors[colors.length-1].color" ng-class="'bglc-'+colors[colors.length-1].color" ng-mouseup="recalcColor()" class="colorbarcolor"></section><div ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.right" class="colorbarcoloraddr"><span class="material-icons">add</span></div><div class="colorbarfacer"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"

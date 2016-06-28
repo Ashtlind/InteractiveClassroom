@@ -1,19 +1,31 @@
 .fullpagecentercont(my-resize gothing="findFlexBasis()")
+  .stuprofpiccont.stuprofpicconttop
+    .stuprofpic.stuprofpichead(ng-show="Answers.one>0")
+      include ../svg/BlankFace.svg
+    .stuprofpic(ng-repeat="student in Students.ActiveList | filter: {Answer:1}")
+      .stuprofpic404(ng-show="student.ProfilePicture==undefined") ?
+      img(ng-src="{{student.ProfilePicture}}")
+  .stuprofpiccont.stuprofpiccontleft
+    .stuprofpic.stuprofpichead(ng-show="Answers.zero>0")
+      include ../svg/ConfusedFace.svg
+    .stuprofpic(ng-repeat="student in Students.ActiveList | filter: {Answer:0}")
+      .stuprofpic404(ng-show="student.ProfilePicture==undefined") ?
+      img(ng-src="{{student.ProfilePicture}}")
+  .stuprofpiccont.stuprofpiccontright
+    .stuprofpic.stuprofpichead(ng-show="Answers.two>0")
+      include ../svg/happyFace.svg
+    .stuprofpic(ng-repeat="student in Students.ActiveList | filter: {Answer:2}")
+      .stuprofpic404(ng-show="student.ProfilePicture==undefined") ?
+      img(ng-src="{{student.ProfilePicture}}")
   header
     h1 {{classPub.Name}}
     h5.plain There is currently&nbsp;
       u {{Students.StudentTotal}}
       | &nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;
-      u {{Answers.Perc}}%
+      u {{Answers.Perc | number : 1}}%
       | &nbsp;of which understand the current topic.
     button.btn(ng-click="createNewTopic()") New Topic
-  .answ-cont
-    .answ.answ-false(answtitle="Confused")
-      h1 {{ Answers.zero }}
-    .answ.answ-mid(answtitle="Getting there")
-      h1 {{ Answers.one }}
-    .answ.answ-true(answtitle="Understand")
-      h1 {{ Answers.two }}
+  
   .colorbarcont
     span.material-icons.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
       span(ng-if="!colorbarselect" class="dark") edit
@@ -26,7 +38,7 @@
         span.material-icons highlight_off
     .colorbar
       .colorbarfacel
-        include ../svg/BlankFace.svg
+        include ../svg/ConfusedFace.svg
       .colorbarcoloraddl(ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.left")
         span.material-icons add
       section.colorbarcolor(ng-repeat="(key, color) in colors" id="color-{{key}}" ng-if="!$last" resizable r-directions="['right']" r-flex="true" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="color.color" ng-class="'bglc-'+color.color" ng-mouseup="recalcColor()")

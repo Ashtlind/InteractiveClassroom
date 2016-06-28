@@ -7,10 +7,10 @@ html(ng-app="IC")
     script(src="/scripts/app.min.js")
     
   body
-    div.nav(ng-controller="Nav", ng-class="{'navexpanddisplace' : nav}", ng-show="showNav()")
+    .nav(ng-controller="Nav", ng-class="{'navexpanddisplace' : nav}", ng-show="showNav()")
       .navitems(ng-class="{'navexpand' : nav}")
         a(ng-repeat="item in items track by $index", class="repeat-animation", href="{{item.link}}", icon="{{item.icon}}").navitem {{item.fb.Name}}
       button(class="hamburger hamburger--elastic", ng-click="toggle()", ng-class="{'is-active' : nav}")
         span(class="hamburger-box")
           span(class="hamburger-inner")
-    div(ng-view).maincontainer
+    .maincontainer(ng-view)
