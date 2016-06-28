@@ -27,7 +27,7 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
     // Setup a heartbeat loop
     heartbeatIntervalPromise = $interval(function () {
       if ($scope.myHeartbeat != undefined) {
-        $scope.myHeartbeat.$value = Date.now();
+        $scope.myHeartbeat.Date = Date.now();
         $scope.myHeartbeat.$save();
       }
     }, 30000);
@@ -41,7 +41,9 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
 
         // Set the heartbeat location based on the current lesson
         $scope.myHeartbeat = $firebaseObject($scope.lessonRef.child("Students").child($scope.userData.uid));
-        $scope.myHeartbeat.$value = Date.now();
+        $scope.myHeartbeat.Date = Date.now();
+        // Also set our profile picture path for easy access in the teacher dashboard
+        $scope.myHeartbeat.ProfilePicture = $scope.userData.profileImageURL;
         $scope.myHeartbeat.$save();
       }
     });
