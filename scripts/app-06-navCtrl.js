@@ -82,7 +82,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
       "link" : "#/",
       "fb" : {
         "Name" : "Home"
-      }
+      },
+      "right" : true
     },
     {
       "icon" : "highlight_off",
@@ -161,6 +162,19 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
       $scope.itemsUpdate();
     }
   });
+
+  $scope.navItemClass = function (item) {
+    var classes = "";
+    if (item.right)
+      classes += "navitemright ";
+    if (item.fb.CurrentLesson != undefined) {
+      if ((item.fb.CurrentLesson.Date != undefined && item.fb.CurrentLesson.Date <= (Date.now() - (60000*60))) || item.fb.CurrentLesson.Completed)
+        classes += "naviteminactive ";
+      else
+        classes += "navitemactive ";
+    }
+    return classes;
+  };
 
   // Toggle the nav
   $scope.toggle = function () {

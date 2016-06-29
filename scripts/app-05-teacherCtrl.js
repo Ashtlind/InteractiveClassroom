@@ -1,4 +1,4 @@
-angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', '$interval', '$timeout', 'cfpLoadingBar', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef, $interval, $timeout, cfpLoadingBar) {
+angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', '$interval', '$timeout', 'cfpLoadingBar', '$location', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef, $interval, $timeout, cfpLoadingBar, $location) {
     var root = fbRef;
 
     $scope.classid = $routeParams.classid.substring(1);
@@ -104,6 +104,12 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         });
         $scope.classPub = $firebaseObject(classRef.child("/Pub"));
         $scope.classPub.$loaded(function () {
+          // See if the lesson is marked as completed if so remove that flag
+          if ($scope.classPub.CurrentLesson.Completed) {
+            $scope.classPub.CurrentLesson.Completed = false;
+            $scope.classPub.$save();
+          }
+
           // Check if there is a current lesson or if the last has expired (2 hours)
           if ($scope.classPub.CurrentLesson == undefined || $scope.classPub.CurrentLesson.uid == "" || $scope.classPub.CurrentLesson.Date <= (Date.now() - (60000*60))) {
             // Create new lesson and topic set it as the current lesson
@@ -151,7 +157,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           $scope.classPub.$save();
         });
       }
-    }
+    };
+
+    $scope.closeOffLesson = function () {
+      if ($scope.classPub.CurrentLesson != undefined) {
+        $scope.classPub.CurrentLesson.Completed = true;
+        $scope.classPub.$save().then(function () {
+          $location.path('/');
+        });
+      }
+    };
 
     // Check the student list every 30 seconds to see if there are any students that are not active
     var activeStudentsIntervalPromise = $interval(function () {

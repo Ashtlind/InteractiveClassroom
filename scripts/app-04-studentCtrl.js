@@ -1,4 +1,4 @@
-angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar, fbRef) {
+angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$interval', '$rootScope', 'cfpLoadingBar', 'fbRef', '$location', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $interval, $rootScope, cfpLoadingBar, fbRef, $location) {
     var root = fbRef;
 
     $scope.classid = $routeParams.classid.substring(1);
@@ -36,6 +36,11 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
 
     $scope.$watch("classInfo.CurrentLesson", function (newVal, oldVal) {
       if (newVal != undefined) {
+        // if this class is marked as inactive or expired redirect to the homepage
+        if (($scope.classInfo.CurrentLesson.Date != undefined && $scope.classInfo.CurrentLesson.Date <= (Date.now() - (60000*60))) || $scope.classInfo.CurrentLesson.Completed) {
+          $location.path('/');
+        }
+
         // Get the referance point for the current lesson based on class info
         $scope.lessonRef = root.child("Classes").child($scope.classid).child("Lessons").child($scope.classInfo.CurrentLesson.uid);
 

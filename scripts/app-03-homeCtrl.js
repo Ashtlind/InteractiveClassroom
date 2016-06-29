@@ -127,8 +127,9 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
         // Update the date on the users/classes/teaches to update the nav listener
         var teachesClassIndex = userTeaches.$indexFor(classGUID);
         userTeaches[teachesClassIndex].Date = Date.now();
-        userTeaches.$save(teachesClassIndex);
-        $location.path('/dashboard:' + classGUID);
+        userTeaches.$save(teachesClassIndex).then(function () {
+          $location.path('/dashboard:' + classGUID);
+        });
       });
     });
   };
@@ -139,17 +140,13 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
       joiner.$loaded(function () {
         if (joiner != null && joiner != undefined) {
           // Now get the users /Classes
-          var userClasses = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Classes"));
-          // Check if user partakes or teaches class - if not add it
-          userClasses.$loaded(function () {
-            if (userClasses.Partakes == undefined)
-              userClasses.Partakes = {};
-            if (userClasses.Partakes[joiner.Class] == undefined) {
-              userClasses.Partakes[joiner.Class] = Date();
-              userClasses.$save();
-            }
-            if (userClasses.Teaches != undefined && userClasses.Teaches[joiner.Class] != undefined) {
-              $location.path('/dashboard:' + joiner.Class);
+          var userPartakes = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Classes").child("Partakes").child(joiner.Class));
+          userPartakes.$loaded(function () {
+            if (userPartakes.Date == undefined) {
+              userPartakes.Date = Date();
+              userPartakes.$save().then(function () {
+                $location.path('/class:' + joiner.Class);
+              });
             } else {
               $location.path('/class:' + joiner.Class);
             }

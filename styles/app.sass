@@ -134,7 +134,7 @@ button
 	padding-left: 5.5rem
 	display: none
 	&.navexpand
-		display: block
+		display: flex
 		max-height: 40rem
 		padding: 0.75rem 0.8rem
 		padding-left: 5.5rem
@@ -143,7 +143,6 @@ button
 		color: $light
 .navitem
 	background-color: $dark
-	overflow: hidden
 	height: 2rem
 	display: inline-block
 	padding: 0 2rem
@@ -157,6 +156,14 @@ button
 	cursor: pointer
 	position: relative
 	text-decoration: none
+	&.navitemright
+		margin-left: auto
+	&.naviteminactive
+		&::before
+			color: lighten($red, 20%)
+	&.navitemactive
+		&::before
+			color: lighten($green, 20%)
 	&::before
 		@extend .material-icons
 		content: attr(icon)
@@ -372,16 +379,15 @@ select
 			top: -4rem
 	&.stuprofpiccontleft
 		left: -0.5rem
-		height: 100%
-		padding: 7rem 0
+		top: 5rem
+		bottom: 8rem
 		flex-direction: column
 		& > .stuprofpic.stuprofpic.ng-enter, & > .stuprofpic.ng-leave.ng-leave-active, & > .stuprofpic.ng-hide-add.ng-hide-add-active, & > .stuprofpic.ng-hide-remove
-			top: -4rem
 			left: -4rem
 	&.stuprofpiccontright
 		right: -0.5rem
-		height: 100%
-		padding: 7rem 0
+		top: 5rem
+		bottom: 8rem
 		flex-direction: column
 		& > .stuprofpic.stuprofpic.ng-enter, & > .stuprofpic.ng-leave.ng-leave-active, & > .stuprofpic.ng-hide-add.ng-hide-add-active, & > .stuprofpic.ng-hide-remove
 			left: 4rem
@@ -445,6 +451,7 @@ select
 		margin-left: -1rem
 		font-size: 2rem
 		line-height: 5rem
+		background-color: rgba(255,255,255,0.1)
 		&::before
 			content: ""
 			position: absolute
