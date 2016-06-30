@@ -105,7 +105,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.classPub = $firebaseObject(classRef.child("/Pub"));
         $scope.classPub.$loaded(function () {
           // See if the lesson is marked as completed if so remove that flag
-          if ($scope.classPub.CurrentLesson.Completed) {
+          if ($scope.classPub.CurrentLesson != undefined && $scope.classPub.CurrentLesson.Completed) {
             $scope.classPub.CurrentLesson.Completed = false;
             $scope.classPub.$save();
           }
@@ -135,8 +135,8 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
               });
             });
           }
+          cfpLoadingBar.complete();
         });
-        cfpLoadingBar.complete();
       }
     });
     $rootScope.$broadcast('userGuidReq');
@@ -283,7 +283,53 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     $scope.pluralsAreGoodIGuess = function (numb) {
       if(numb>1 || numb==0)
         return 's'
-    }
+    };
+    $scope.areAndIsAreWeird = function (numb) {
+      if(numb>1 || numb==0)
+        return 'are'
+      return 'is'
+    };
+
+    $scope.generateInviteLoop = function (randNumb) {
+      var joinerDate = $firebaseObject(root.child("Joiners").child(randNumb).child("Date"));
+      joinerDate.$loaded().then(function () {
+        if (joinerDate.$value == undefined || joinerDate.$value <= (Date.now() - (60000*60))) {
+          // The joiner is not active (expired), so we can override or does not exist
+          console.log("Create the joiner at " + randNumb);
+          var joinerClass = $firebaseObject(root.child("Joiners").child(randNumb).child("ClassUid"));
+          joinerClass.$value = $scope.classid;
+          joinerClass.$save().then(function () {
+            joinerDate.$value = Date.now();
+            joinerDate.$save();
+          });
+          $scope.generatedInvite = randNumb;
+        } else {
+          // Retry with a diffrent random number
+          $scope.generateInviteIterate();
+        }
+      });
+    };
+
+    $scope.generateInviteIterate = function () {
+      if ($scope.generateInviteIterateRetries < 5) {
+        var randNumb = Math.floor(1000 + Math.random() * 9000);
+        $scope.generateInviteLoop(randNumb);
+        $scope.generateInviteIterateRetries++;
+      }
+    };
+
+    $scope.generateInviteCode = function () {
+      // Generate a unique pin to join the class with for the first time - 5 tries
+      $scope.generatedInvite = "";
+      $scope.generateInviteIterateRetries = 0;
+      $scope.generateInviteIterate();
+    };
+
+    $scope.getInviteLink = function () {
+      if ($scope.generatedInvite)
+        return location.protocol + '//' + location.host + "/#/:" + $scope.generatedInvite;
+      return "";
+    };
 
     // Colors and settings
     $scope.colors = new Array();

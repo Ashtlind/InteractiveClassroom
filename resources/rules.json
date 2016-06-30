@@ -48,7 +48,7 @@
               },
              "Partakes": {
                 "$class_id" : {
-                  ".write": "auth.uid === $user_id"
+                  ".write": "auth.uid === $user_id && (root.child('Joiners').child(newData.child('ReferJoiner').val()).child('ClassUid').val() == $class_id && root.child('Joiners').child(newData.child('ReferJoiner').val()).child('Date').val() > now - (60000*60))"
                 }
               }
             },
@@ -57,7 +57,13 @@
         },
         "Joiners" : {
           "$joiner" : {
-            ".read" : "data.child('Date').val() < now"
+            "Date" : {
+              ".read" : "true"
+            },
+            "ClassUid" : {
+              ".read" : "!data.parent().child('Date').exists() || data.parent().child('Date').val() > now - (60000*60)"
+            },
+            ".write" : "!data.exists() || !data.child('Date').exists() || data.child('Date').val() <= now - (60000*60)"
           }
         },
         "Hue" : {

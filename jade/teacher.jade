@@ -19,14 +19,22 @@
       img(ng-src="{{student.ProfilePicture}}")
   header
     h1 {{classPub.Name}}
-    h5.plain There is currently&nbsp;
+      span.material-icons.classsettings.csr &nbsp;&nbsp;settings
+    h5.plain There {{areAndIsAreWeird(Students.StudentTotal)}} currently&nbsp;
       u {{Students.StudentTotal}}
       | &nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;
-      u {{Answers.Perc | number : 1}}%
-      | &nbsp;of which understand the current topic.
+      span(ng-show="Students.StudentTotal>0")
+        u {{Answers.Perc | number}}%
+        | &nbsp;of which understand the current topic.
+      span(ng-show="generatedInvite")
+        br
+        | New student's can join your class using the invite code&nbsp;
+        u {{generatedInvite}}
+        | &nbsp;or by going to {{getInviteLink()}}
+  .actionbuttoncont
+    button.btn.open.icon(ng-click="generateInviteCode()" icon="group_add")
     button.btn(ng-click="createNewTopic()") New Topic
-    button.btn(ng-click="closeOffLesson()") Close Lesson
-  
+    button.btn.open.icon(ng-click="closeOffLesson()" icon="close")
   .colorbarcont
     span.material-icons.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
       span(ng-if="!colorbarselect" class="dark") edit

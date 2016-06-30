@@ -1,16 +1,6 @@
 angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebaseArray', '$timeout', '$location', '$rootScope', '$routeParams', 'cfpLoadingBar', 'fbRef', function ($scope, $firebaseObject, $firebaseArray, $timeout, $location, $rootScope, $routeParams, cfpLoadingBar, fbRef) {
   var root = fbRef;
 
-  // Route action - if any
-  if ($routeParams.action != undefined){
-    var action = $routeParams.action.substring(1);
-    switch(action) {
-    case "logout":
-        $rootScope.$broadcast('logout');
-        break;
-    }
-  }
-
   $scope.btngrpclass = "";
   $scope.invitecode = "";
   $scope.labeltext = "";
@@ -25,6 +15,18 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     $scope.joinBtn = false;
   };
 
+  // Route action - if any
+  if ($routeParams.action != undefined){
+    var action = $routeParams.action.substring(1);
+    switch(action) {
+    case "logout":
+        $rootScope.$broadcast('logout');
+        break;
+    default:
+
+    }
+  }
+
   // Get the user's guid initially and subscribe to changes
   // More complex due to allowing anonymous users only on the home page
   $scope.userData = {};
@@ -38,6 +40,14 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
       // That means we are authenticated
       $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
       $scope.userData.$loaded(function () {
+        // Check for a class invite link to join in the routeParams and join it if there is one
+        if ($routeParams.action != undefined) {
+          var action = $routeParams.action.substring(1);
+          if (!isNaN(action)) {
+            $scope.joinClass(action);
+          }
+        }
+
         if ($scope.joinBtn) {
           // If we had pressed a call to action and now authenticated - continue
           $scope.btngrpclass = "homebtngrp--loggedin";
@@ -100,7 +110,7 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
         if ($scope.addingClass)
           $scope.createClass();
         else
-          $scope.joinClass();
+          $scope.joinClass($scope.invitecode);
         break;
     default:
         $scope.classroom(true);
@@ -134,21 +144,30 @@ angular.module('IC').controller('Home', ['$scope', '$firebaseObject', '$firebase
     });
   };
   // Join from invite text field
-  $scope.joinClass = function () {
-    if ($scope.invitecode != "" && $scope.invitecode.length > 3) {
-      var joiner = $firebaseObject(root.child("Joiners").child($scope.invitecode));
-      joiner.$loaded(function () {
-        if (joiner != null && joiner != undefined) {
-          // Now get the users /Classes
-          var userPartakes = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Classes").child("Partakes").child(joiner.Class));
-          userPartakes.$loaded(function () {
-            if (userPartakes.Date == undefined) {
-              userPartakes.Date = Date();
-              userPartakes.$save().then(function () {
-                $location.path('/class:' + joiner.Class);
+  $scope.joinClass = function (invite) {
+    if (invite != undefined && invite != "" && invite.length > 3) {
+      var joinerDate = $firebaseObject(root.child("Joiners").child(invite).child("Date"));
+      joinerDate.$loaded(function () {
+        if (joinerDate.$value != undefined && joinerDate.$value > (Date.now() - (60000*60))) {
+          // The joiner exists and has not expired - so now ask for the uid of the class
+          console.log(invite);
+          var joinerClass = $firebaseObject(root.child("Joiners").child(invite).child("ClassUid"));
+          joinerClass.$loaded().then(function () {
+            // Now add the class to the user
+            if (joinerClass.$value != undefined) {
+              var userPartakes = $firebaseObject(root.child("Users").child($scope.userData.uid).child("Classes").child("Partakes").child(joinerClass.$value));
+              userPartakes.$loaded(function () {
+                if (userPartakes.Date == undefined) {
+                  userPartakes.Date = Date();
+                  // The refer joiner is used in firebase rules to verify that the class being added has the correct joiner and has not expired
+                  userPartakes.ReferJoiner = invite;
+                  userPartakes.$save().then(function () {
+                    $location.path('/class:' + joinerClass.$value);
+                  });
+                } else {
+                  $location.path('/class:' + joinerClass.$value);
+                }
               });
-            } else {
-              $location.path('/class:' + joiner.Class);
             }
           });
         }

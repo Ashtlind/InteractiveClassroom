@@ -7,7 +7,6 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
 
   Auth.$onAuthStateChanged(function (authData) {
     if (authData != null) {
-      console.log(authData);
       $rootScope.userData = $firebaseObject(root.child("Users").child(authData.uid).child("User"));
       $rootScope.userData.$loaded(function () {
         $rootScope.userData.uid = authData.uid;
