@@ -52,7 +52,8 @@ paths.bowerLibraries = {
     "normalize-css": paths.bowerBase + "normalize-css/*.{map,css}",
     "angular-resizable": paths.bowerBase + "angular-resizable/src/*.{js,map,css}",
     "jquery-ui": paths.bowerBase + "jquery-ui/*.{js,map}",
-    "angular-dragdrop": paths.bowerBase + "angular-dragdrop/src/*.{js,map}"
+    "angular-dragdrop": paths.bowerBase + "angular-dragdrop/src/*.{js,map}",
+    "angular-touch": paths.bowerBase + "angular-touch/*.{js,map}"
 };
 
 // Removes the vendor folder completely

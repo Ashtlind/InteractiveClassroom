@@ -5,7 +5,7 @@ html(ng-app="IC")
     link(rel='stylesheet' href='/styles/vendor.min.css')
     link(rel="stylesheet",href="/styles/app.min.css")
     script(src="/scripts/app.min.js")
-    
+    meta(name="viewport" content="width=device-width")
   body
     .nav(ng-controller="Nav", ng-class="{'navexpanddisplace' : nav}", ng-show="showNav()")
       .navitems(ng-class="{'navexpand' : nav}")

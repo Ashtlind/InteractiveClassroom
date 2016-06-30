@@ -83,6 +83,13 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
       }
     };
 
+    $scope.swipeAnswer = function (right) {
+      if (right && $scope.currentAnswer.Answer < 2)
+        $scope.answer($scope.currentAnswer.Answer + 1);
+      else if (!right && $scope.currentAnswer.Answer > 0)
+        $scope.answer($scope.currentAnswer.Answer - 1);
+    }
+
     $scope.answer = function (answer) {
       $scope.currentAnswer.Answer = answer;
       $scope.currentAnswer.Date = Date();
