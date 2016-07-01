@@ -1,9 +1,15 @@
 .fullpagecentercont
   header
     h1 {{classInfo.Name}}
+  .stufacesbubblecontalign
+    .stufacesbubblecont(ng-class="{'stufaceactive':currentAnswer.Answer==2}")
+      .stufacesbubblepointer
+        include ../svg/SpeechBubble.svg
+      .stufacesbubble
+        h2 The text is in the bubble
   .stufaces
     .stuface(ng-click="answer(2)" ng-class="{'stufaceactive':currentAnswer.Answer==2}" ng-swipe-right="swipeAnswer(true)" ng-swipe-left="swipeAnswer(false)")
-      include ../svg/happyFace.svg
+      include ../svg/HappyFace.svg
     .stuface(ng-click="answer(1)" ng-class="{'stufaceactive':currentAnswer.Answer==1}" ng-swipe-right="swipeAnswer(true)" ng-swipe-left="swipeAnswer(false)")
       include ../svg/BlankFace.svg
     .stuface(ng-click="answer(0)" ng-class="{'stufaceactive':currentAnswer.Answer==0}" ng-swipe-right="swipeAnswer(true)" ng-swipe-left="swipeAnswer(false)")
