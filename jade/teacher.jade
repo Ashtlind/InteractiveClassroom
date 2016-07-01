@@ -36,9 +36,18 @@
     button.btn(ng-click="createNewTopic()") New Topic
     button.btn.open.icon(ng-click="closeOffLesson()" icon="close")
   .colorbarcont
-    span.material-icons.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
-      span(ng-if="!colorbarselect" class="dark") edit
-      span(ng-if="colorbarselect" class="light") close
+    span.opencolorbarselector(ng-click="colorbarselect=!colorbarselect")
+      .material-icons(ng-if="!colorbarselect" class="dark") edit
+      .material-icons(ng-if="colorbarselect" class="light") close
+      span(ng-show="!colorbarselect && selectedHue.Bridge && selectedHue.Light" class="dark") {{selectedHue.Bridge.Name}} - {{selectedHue.Light.name}}
+      span(ng-show="!colorbarselect && (!selectedHue.Bridge || !selectedHue.Light)" class="dark") Please select a hue bridge and light
+    .colorbarhueinfo
+      select(ng-show="colorbarselect" name="bridgeSelect" id="bridgeSelect" ng-model="selectionHue.BridgeSel")
+        option(value="" disabled selected hidden) Select Bridge
+        option(ng-repeat="bridge in hueBridges" value="{{bridge}}") {{bridge.Name}}
+      select(ng-show="colorbarselect" name="lightSelect" id="lightSelect" ng-model="selectionHue.LightSel")
+        option(value="" disabled selected hidden) Select Light
+        option(ng-repeat="light in selectedHue.Lights" value="{{light}}") {{light.name}}
     .colorbarindicatorcont
       .colorbarindicator.material-icons(style="left: {{Answers.Perc}}%") lightbulb_outline
     .colorbarselector(ng-show="colorbarselect")

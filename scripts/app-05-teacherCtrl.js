@@ -1,25 +1,9 @@
 angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$firebaseArray', '$routeParams', '$rootScope','hue', 'fbRef', '$interval', '$timeout', 'cfpLoadingBar', '$location', function ($scope, $firebaseObject, $firebaseArray, $routeParams, $rootScope, hue, fbRef, $interval, $timeout, cfpLoadingBar, $location) {
     var root = fbRef;
+    var myHue = hue;
 
     $scope.classid = $routeParams.classid.substring(1);
     var classRef = root.child("Classes").child($scope.classid);
-
-    // HUE Experiments
-    // Get all lights
-    var myHue = hue;
-    myHue.setup({username: "SzDOKancs7zL7Vubik2dn3MAqJJ8QU46iRZa7qpB", bridgeIP: "172.16.11.40", debug: true});
-    // Create username - Goes to /api/username/api .... insted of just / api and getting the username as a response
-    //var username = myHue.createUser("interactiveclassroom#amdevice", "imauser");
-    //console.log(username);
-
-    myHue.getLights().then(function(lights) {
-      $scope.lights = lights;
-      // Switch light 1 on
-      myHue.setLightState(1, {"on": true}).then(function(response) {
-        //$scope.lights[1].state.on = false;
-        //console.log('API response: ', response);
-      });
-    });
 
     $scope.convertRGBtoXY = function (red, green, blue) {
       // http://www.developers.meethue.com/content/rgb-hue-color0-65535-javascript-language
@@ -47,14 +31,14 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     };
 
     $scope.setHueColor = function (r,g,b) {
-      var on = true;
-      if (r<=0 && g<=0 && b<=0)
-        on = false;
-      var xy = $scope.convertRGBtoXY(r,g,b);
-      myHue.setLightState(1, {"on": on, "bri": 254, "xy": xy, "transitiontime": 0}).then(function(response) {
-        //$scope.lights[1].state.on = false;
-        console.log('API response: ', response);
-      });
+      if ($scope.selectedHue.Bridge != undefined && $scope.selectedHue.Bridge.ip != undefined) {
+        var on = true;
+        if ((r<=0 && g<=0 && b<=0) || ($scope.Students!= undefined && $scope.Students.StudentTotal != undefined && $scope.Students.StudentTotal<=0))
+          on = false;
+        var xy = $scope.convertRGBtoXY(r,g,b);
+        myHue.setLightState($scope.selectedHue.Light.id, {"on": on, "bri": 254, "xy": xy, "transitiontime": 0}).then(function(response) {
+        });
+      }
     };
 
     // Get the user's guid initially and subscribe to changes
@@ -65,11 +49,15 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.colorsLive = {};
         $scope.colors = {};
         $scope.classPub = {};
+        $scope.selectedHue = {};
+        $scope.selectionHue = {};
       } else {
         $scope.userData = {};
         $scope.colorsLive = {};
         $scope.colors = {};
         $scope.classPub = {};
+        $scope.selectedHue = {};
+        $scope.selectionHue = {};
         // Init some controller globals
         $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
         // Load the color profile for hue
@@ -84,6 +72,11 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
               {"color":"Aqua", "perc":20}];
             $scope.colorsLive.$save();
           }
+        });
+        // Get the hue bridges from firebase
+        $scope.hueBridges = $firebaseArray(root.child("Hue"));
+        $scope.hueBridges.$loaded().then(function () {
+          console.log($scope.hueBridges);
         });
         $scope.colorsLive.$watch(function (event) {
           // On changes to the live color - Syncronise to the local array
@@ -161,12 +154,40 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
 
     $scope.closeOffLesson = function () {
       if ($scope.classPub.CurrentLesson != undefined) {
+        // Turn off any hue bulb
+        $scope.setHueColor(0,0,0);
         $scope.classPub.CurrentLesson.Completed = true;
         $scope.classPub.$save().then(function () {
           $location.path('/');
         });
       }
     };
+
+    $scope.$watch('selectionHue', function (newVal, oldVal) {
+      console.log("CHANGE HUE watch");
+      console.log(newVal);
+      if (newVal != undefined) {
+        if (newVal.BridgeSel != undefined && newVal.BridgeSel != "" && newVal.BridgeSel != oldVal.BridgeSel) {
+          // The angular select saves the object in escaped json to BridgeSel
+          $scope.selectedHue.Bridge = angular.fromJson(newVal.BridgeSel);
+          // Let's tell the hue service the new details
+          myHue.setup({username: $scope.selectedHue.Bridge.username, bridgeIP: $scope.selectedHue.Bridge.ip, debug: true});
+          myHue.getLights().then(function(lights) {
+            // Add the id to each light as this is used to identify the lights - sadly the hue service does not return an array
+            angular.forEach(lights, function (light, key) {
+              light.id = key;
+            });
+            $scope.selectedHue.Lights = lights;
+          });
+        }
+        if (newVal.LightSel != undefined && newVal.LightSel != "" && newVal.LightSel != oldVal.LightSel) {
+          // The angular select saves the object in escaped json to LampSel
+          $scope.selectedHue.Light = angular.fromJson(newVal.LightSel);
+          // After the light has been selected set the color initially
+          $scope.findColor();
+        }
+      }
+    }, true);
 
     // Check the student list every 30 seconds to see if there are any students that are not active
     var activeStudentsIntervalPromise = $interval(function () {
@@ -194,6 +215,13 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
             }
           }
         });
+        if ($scope.Students.StudentTotal <= 0 && totalStudents > 0) {
+          // Turn the light's state back on
+          $scope.findColor();
+        } else if ($scope.Students.StudentTotal > 0 && totalStudents <= 0) {
+          // 0 students so turn the light off
+          $scope.setHueColor(0,0,0);
+        }
         $scope.Students.StudentTotal = totalStudents;
         $scope.updateTopicAnswers();
       }

@@ -184,4 +184,9 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     $scope.nav = !$scope.nav;
   };
 
+  $scope.closeNav = function () {
+    if ($scope.nav)
+      $scope.toggle();
+  };
+
 }]);
