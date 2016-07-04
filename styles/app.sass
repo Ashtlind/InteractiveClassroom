@@ -37,6 +37,24 @@ body
 header
 	width: 100%
 
+footer
+	position: fixed
+	color: darken($yellow, 40%)
+	left: 1rem
+	bottom: 1rem
+	a
+		&:link
+			color: darken($yellow, 50%)
+		&:visited
+			color: darken($yellow, 40%)
+		&:hover
+			text-decoration: underline
+		&:active
+			color: darken($yellow, 30%)
+			text-decoration: underline
+		text-decoration: none
+		color:darken($yellow, 40%)
+
 h1, h2, h3, h4
 	font-family: 'Permanent Marker', cursive
 	margin-bottom: $margin-heading
@@ -181,10 +199,10 @@ button
 	text-decoration: none
 	&.naviteminactive
 		&::before
-			color: lighten($red, 20%)
+			color: lighten($dark, 20%)
 	&.navitemactive
 		&::before
-			color: lighten($green, 20%)
+			color: $light
 	&::before
 		@extend .material-icons
 		content: attr(icon)
@@ -358,6 +376,9 @@ select
 .homeheader
 	margin-bottom: 10%
 
+.dashheader
+	margin-top: -10%
+
 .homeface
 	position: absolute
 	width: 40%
@@ -502,7 +523,7 @@ select
 
 
 .colorbarcont
-	position: absolute
+	position: fixed
 	left: 0
 	bottom: 0
 	width: 100%

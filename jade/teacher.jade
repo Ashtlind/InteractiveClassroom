@@ -17,7 +17,7 @@
     .stuprofpic(ng-repeat="student in Students.ActiveList | filter: {Answer:2}")
       .stuprofpic404(ng-show="student.ProfilePicture==undefined") ?
       img(ng-src="{{student.ProfilePicture}}")
-  header
+  header.dashheader
     h1 {{classPub.Name}}
       span.material-icons.classsettings.csr &nbsp;&nbsp;settings
     h5.plain There {{areAndIsAreWeird(Students.StudentTotal)}} currently&nbsp;
