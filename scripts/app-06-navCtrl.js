@@ -22,6 +22,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
       $rootScope.classData = $firebaseObject(root.child("Users").child(authData.uid).child("Classes"));
     } else {
       $rootScope.userData = {};
+      $scope.nav = false;
       $rootScope.$broadcast('userGuid', undefined);
     }
   });
