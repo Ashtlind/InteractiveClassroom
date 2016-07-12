@@ -171,7 +171,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           // The angular select saves the object in escaped json to BridgeSel
           $scope.selectedHue.Bridge = angular.fromJson(newVal.BridgeSel);
           // Let's tell the hue service the new details
-          myHue.setup({username: $scope.selectedHue.Bridge.username, bridgeIP: $scope.selectedHue.Bridge.ip, debug: true});
+          myHue.setup({username: $scope.selectedHue.Bridge.username, bridgeIP: $scope.selectedHue.Bridge.ip, proxytarget: $scope.selectedHue.Bridge.id, debug: true});
           myHue.getLights().then(function(lights) {
             // Add the id to each light as this is used to identify the lights - sadly the hue service does not return an array
             angular.forEach(lights, function (light, key) {

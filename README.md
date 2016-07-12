@@ -34,6 +34,29 @@ firebase login
 firebase deploy
 ```
 
+#### A note on HTTPS and phillips hue
+Phillips hue currently does not have HTTPS support..
+Browser security features disable 'Mixed Content' when using https, preventing non ssl http requests.
+As a work around there is a simple nodejs https > http proxy included 'proxy.js' to be run somewhere on your network.
+Simply modify the targets object contained in 'proxy.js' by adding each hue bridge with a unique ID and ip to direct the traffic too. This unique ID is then referenced by a header in the HTTP request to the proxy.
+```js
+var targets = {
+  'bridge.dev': 'http://155.12.11.40',
+  'bridge.one' : 'http://155.12.11.41'
+};
+
+const options = {
+  key: fs.readFileSync('<Your ssl key.pem>', 'utf8'),
+  cert: fs.readFileSync('<Your ssl certificate.pem>', 'utf8')
+};
+```
+
+Then run the proxy using 'forever' for nodejs
+```
+npm install -g forever
+forever start proxy.js
+```
+
 ### Development
 ##### Get set up
 ```

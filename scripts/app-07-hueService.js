@@ -5,7 +5,8 @@ angular.module("hue", []).service("hue", [
     config = {
       username: "",
       apiUrl: "",
-      bridgeIP: ""
+      bridgeIP: "",
+      proxytarget: ""
     };
     isReady = false;
     _setup = function() {
@@ -50,7 +51,7 @@ angular.module("hue", []).service("hue", [
     _put = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
-      $http.put(url, data).success(function(response) {
+      $http.put(url, data, {'headers': {'proxytarget': config.proxytarget}}).success(function(response) {
         return _responseHandler(name, response, deferred);
       }).error(function(response) {
         $log.error("Error: " + name, response);
@@ -61,7 +62,7 @@ angular.module("hue", []).service("hue", [
     _post = function(name, url, data) {
       var deferred;
       deferred = $q.defer();
-      $http.post(url, data).success(function(response) {
+      $http.post(url, data, {'headers': {proxytarget: config.proxytarget}}).success(function(response) {
         return _responseHandler(name, response, deferred);
       }).error(function(response) {
         $log.error("Error: " + name, response);
@@ -83,7 +84,7 @@ angular.module("hue", []).service("hue", [
     _get = function(name, url) {
       var deferred;
       deferred = $q.defer();
-      $http.get(url).success(function(response) {
+      $http.get(url, {'headers': {proxytarget: config.proxytarget}}).success(function(response) {
         return _responseHandler(name, response, deferred);
       }).error(function(response) {
         $log.error("" + name, response);
@@ -139,7 +140,7 @@ angular.module("hue", []).service("hue", [
       return _get("getBridgeNupnp", "https://www.meethue.com/api/nupnp");
     };
     buildApiUrl = function() {
-      return "http://" + config.bridgeIP + "/api/" + config.username;
+      return "https://" + config.bridgeIP + "/api/" + config.username;
     };
     this.getBridgeIP = function() {
       return _setup().then(function() {
