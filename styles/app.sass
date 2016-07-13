@@ -423,33 +423,37 @@ select
 
 .stufacesbubblecontalign
 	display: flex
-	width: 100%
+	width: 90%
+	position: relative
+	height: 5.5rem
 	justify-content: center
 .stufacesbubblecont
-	height: 7rem
-	flex: 1
-	position: relative
+	height: 5.5rem
+	position: absolute
+	width: 76.66%
+	right: 0
 	overflow: hidden
+	display: flex
 	.stufacesbubblepointer
-		position: absolute
-		left: 0
-		top: 0
-		height: 100%
+		flex: 0 1 5rem
 		svg
 			width: 100%
 			height: 100%
 	.stufacesbubble
-		position: absolute
 		height: 62%
 		background-color: $dark
-		left: 4%
 		color: $yellow
-		padding-right: 1.3rem
+		padding-right: 2rem
+		margin-left: -2px
 		font-size: 1.5rem
 		border-radius: 0.7rem
-		border-top-left-radius: 2rem
+		border-top-left-radius: 0
+		border-bottom-left-radius: 0
 		display: flex
 		align-items: center
+		overflow: hidden
+		h2
+			height: 3rem
 
 
 .stuprofpiccont
