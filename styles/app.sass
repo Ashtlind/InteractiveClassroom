@@ -159,6 +159,19 @@ button
 	&.navexpanddisplace + .maincontainer::before
 		height: 100%
 		background-color: rgba(255,255,255,0.15)
+.navpointer
+	position: absolute
+	top: 3rem
+	left: 5rem
+	height: 6rem
+	display: flex
+	align-items: center
+	.navpointerarrow
+		width: 6rem
+		svg
+			fill: $dark
+			transform: scaleX(-1) rotate(90deg)
+			height: 100%
 .navitems
 	position: absolute
 	transition: all 0.5s cubic-bezier(0.42, 0, 0.22, 1.18)
@@ -239,7 +252,7 @@ button
 			border-right-style: none
 			border-top-right-radius: 0
 			border-bottom-right-radius: 0
-			background-color: rgba(0,0,0,0)
+			background-color: $yellow
 			color: $dark
 		& > .homebtngrp-right
 			border-top-left-radius: 0

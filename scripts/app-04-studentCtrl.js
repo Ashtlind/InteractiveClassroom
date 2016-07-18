@@ -72,10 +72,10 @@ angular.module('IC').controller('Student', ['$scope', '$firebaseObject', '$fireb
 
     $scope.getLeft = function () {
       switch ($scope.currentAnswer.Answer) {
-        case 0:
+        case 2:
           return 66.666;
           break;
-        case 2:
+        case 0:
           return 0;
           break;
         default:

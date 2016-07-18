@@ -18,4 +18,8 @@ html(ng-app="IC")
       button(class="hamburger hamburger--elastic" ng-click="toggle()" ng-class="{'is-active' : nav}")
         span(class="hamburger-box")
           span(class="hamburger-inner")
+      .navpointer(ng-show="showNavTut()")
+        .navpointerarrow
+          include ../svg/ArrowCurve.svg
+        h1 You can see your classes in here
     .maincontainer(ng-view)

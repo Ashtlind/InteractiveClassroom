@@ -34,6 +34,21 @@ firebase login
 firebase deploy
 ```
 
+#### Add Phillips hue bridges
+Simply add the bride's information to the root of your firebase database in the following structure.
+To Generate a new username for a phillips hue bridge see here:  http://www.developers.meethue.com/documentation/configuration-api
+Leave proxytarget blank unless using the below section [https proxy](#A-note-on-HTTPS-and-phillips-hue).
+```json
+"Hue" : {
+  "UniqueName" : {
+    "Name" : "Bridge Name",
+    "ip" : "the.ip.of.the.bridge",
+    "proxytarget" : "",
+    "username" : "phillipsHueBridgeUniqueUsername"
+  }
+}
+```
+
 #### A note on HTTPS and phillips hue
 Phillips hue currently does not have HTTPS support..
 Browser security features disable 'Mixed Content' when using https, preventing non ssl http requests.

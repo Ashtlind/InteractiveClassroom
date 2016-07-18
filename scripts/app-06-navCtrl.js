@@ -113,15 +113,20 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     }
   };
 
+  $scope.partakeActive = false;
   $scope.$watch('classData.Partakes', function (newVal, oldVal) {
     $scope.navitemspartakes = new Array();
     if (newVal != undefined && newVal != null) {
+      $scope.partakeActive = false;
       angular.forEach(newVal, function (partake, key) {
         var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
         theClass.$loaded(function () {
           var active = false;
           if (theClass.CurrentLesson != "") {
             active = true;
+            if (!((theClass.CurrentLesson.Date != undefined && theClass.CurrentLesson.Date <= (Date.now() - (60000*60))) || theClass.CurrentLesson.Completed)) {
+              $scope.partakeActive = true;
+            }
           }
           $scope.navitemspartakes.push({
             "icon" : "face",
@@ -188,6 +193,13 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   $scope.closeNav = function () {
     if ($scope.nav)
       $scope.toggle();
+  };
+
+  $scope.showNavTut = function () {
+    if (!$scope.nav && $scope.partakeActive && $location.path() == "/") {
+      return true;
+    }
+    return false;
   };
 
 }]);
