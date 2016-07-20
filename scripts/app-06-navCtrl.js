@@ -49,6 +49,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
     Auth.$signInWithPopup(provider).then(function(authData) {
       // Handled in $onAuth event
     }).catch(function(error) {
+      console.log(error);
       if (error.code === 'TRANSPORT_UNAVAILABLE') {
         Auth.$signInWithRedirect(provider).then(function(authData) {
           // Handled in $onAuth event
@@ -196,9 +197,8 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
   };
 
   $scope.showNavTut = function () {
-    if (!$scope.nav && $scope.partakeActive && $location.path() == "/") {
+    if (!$scope.nav && $scope.partakeActive && $location.path() == "/")
       return true;
-    }
     return false;
   };
 

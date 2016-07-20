@@ -352,11 +352,13 @@ select
 	color: $dark
 	border: solid $border-width $light
 	border-radius: 3.4rem
-	padding: 0.8rem 2.5rem
+	padding: 0rem 2.5rem
+	height: 2rem
+	outline: none
 	&:invalid
 		color: $gray
 	option
-		color: $light
+		color: $dark
 
 .maincontainer
 	width: 100%
@@ -485,6 +487,63 @@ select
 		display: flex
 		align-items: center
 
+.modal
+	width: 50%
+	position: fixed
+	z-index: 10
+	top: auto
+	left: auto
+	border-radius: $border-radius * 2
+	background-color: $dark
+	box-shadow: 0rem 0rem 5rem rgba(0, 0, 0, 0.5)
+	color: $light
+	padding: 1.5rem
+	&.ng-hide-remove
+		animation: modalinout 0.2s cubic-bezier(0.42, 0, 0.22, 1.18)
+	&.ng-hide-add
+		animation: modalinout 0.2s cubic-bezier(0.42, 0, 0.22, 1.18) reverse
+	.modalbuttons
+		position: absolute
+		bottom: -1.5rem
+		width: 100%
+		display: flex
+		justify-content: center
+	h1
+		font-size: 2.5rem
+	.modaliconcont
+		position: relative
+		height: 12rem
+		width: 100%
+	.material-icons.modalicon
+		position: absolute
+		font-size: 10rem
+		left: 0
+		&.modaliconsmaller
+			margin-top: -1rem
+			font-size: 12rem
+			color: $red
+		&.modalicondark
+			color: darken($dark, 15%)
+		&.modaliconcolorchange
+			animation: huecolorcycle 8s infinite
+
+@keyframes huecolorcycle
+	0%
+		color: $red
+	25%
+		color: $light-blue
+	75%
+		color: $green
+	100%
+		color: $red
+
+@keyframes modalinout
+	from
+		opacity: 0.2
+		transform: scale(0.5)
+	to
+		opacity: 1
+		transform: scale(1)
 
 .stuprofpiccont
 	position: absolute
@@ -540,6 +599,9 @@ select
 	left: 0
 	bottom: 0
 	width: 100%
+	transition: bottom 0.4s ease-out
+	&.colorbarhide
+		bottom: -8rem
 .opencolorbarselector
 	position: absolute
 	top: -2.4rem
@@ -560,11 +622,9 @@ select
 			color: $dark
 .colorbarhueinfo
 	position: absolute
-	top: -5.6rem
-	left: 0.3rem
+	bottom: 0
 	line-height: 2rem
-	height: 2rem
-	z-index: 2
+	width: 100%
 .colorbarindicatorcont
 	position: absolute
 	left: 4rem

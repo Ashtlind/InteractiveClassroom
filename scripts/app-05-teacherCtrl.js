@@ -171,6 +171,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
           // The angular select saves the object in escaped json to BridgeSel
           $scope.selectedHue.Bridge = angular.fromJson(newVal.BridgeSel);
           // Let's tell the hue service the new details
+          myHue.setup(null);
           myHue.setup({username: $scope.selectedHue.Bridge.username, bridgeIP: $scope.selectedHue.Bridge.ip, proxytarget: $scope.selectedHue.Bridge.proxytarget, debug: true});
           myHue.getLights().then(function(lights) {
             // Add the id to each light as this is used to identify the lights - sadly the hue service does not return an array
@@ -183,11 +184,59 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         if (newVal.LightSel != undefined && newVal.LightSel != "" && newVal.LightSel != oldVal.LightSel) {
           // The angular select saves the object in escaped json to LampSel
           $scope.selectedHue.Light = angular.fromJson(newVal.LightSel);
-          // After the light has been selected set the color initially
-          $scope.findColor();
+          // Open the hue light check modal
+          $scope.hueTestPattern();
         }
       }
     }, true);
+
+    $scope.showHueModal = false;
+    $scope.hueTestPattern = function () {
+      $scope.showHueModal = true;
+      console.log($scope.selectedHue.Light.state.reachable);
+      var error = false;
+      myHue.setLightState($scope.selectedHue.Light.id, {"on": true, effect: "colorloop", "bri": 254, "transitiontime": 5}).then(function(response) {
+        angular.forEach(response, function (resp) {
+          if (resp.error != undefined) {
+            error = true;
+          }
+        });
+      });
+      if (error) {
+        console.log("ERROR WITH LIGHT");
+      }
+    };
+
+    $scope.hueTestPatternRetry = function () {
+      myHue.getLights().then(function(lights) {
+        // Add the id to each light as this is used to identify the lights - sadly the hue service does not return an array
+        angular.forEach(lights, function (light, key) {
+          light.id = key;
+          if (light.id == $scope.selectedHue.Light.id) {
+            $scope.selectedHue.Light = light;
+          }
+        });
+      });
+      $scope.hueTestPattern();
+    };
+
+    $scope.hueTestPatternDone = function () {
+      $scope.showHueModal = false;
+      myHue.setLightState($scope.selectedHue.Light.id, {"on": true, effect: "none", "bri": 254, "transitiontime": 0}).then(function(response) {
+      });
+      // After the light has been selected set the color initially
+      $scope.findColor();
+    };
+
+    $scope.clearSelectedHue = function () {
+      // Turn the light off
+      myHue.setLightState($scope.selectedHue.Light.id, {"on": false, effect: "none", "bri": 254, "transitiontime": 0}).then(function(response) {
+      });
+      $scope.showHueModal = false;
+      $scope.selectedHue = {};
+      $scope.selectionHue = {};
+      $scope.findColor();
+    };
 
     // Check the student list every 30 seconds to see if there are any students that are not active
     var activeStudentsIntervalPromise = $interval(function () {

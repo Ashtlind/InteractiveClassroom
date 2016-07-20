@@ -21,12 +21,8 @@ angular.module("hue", []).service("hue", [
         deferred.reject;
         return deferred.promise;
       }
-      if (config.apiUrl !== "") {
-        isReady = true;
-        deferred.resolve();
-        return deferred.promise;
-      }
       if (config.bridgeIP !== "") {
+        console.log("Rebuild the api url");
         config.apiUrl = buildApiUrl();
         isReady = true;
         deferred.resolve();
@@ -140,7 +136,7 @@ angular.module("hue", []).service("hue", [
       return _get("getBridgeNupnp", "https://www.meethue.com/api/nupnp");
     };
     buildApiUrl = function() {
-      return "https://" + config.bridgeIP + "/api/" + config.username;
+      return config.bridgeIP + "/api/" + config.username;
     };
     this.getBridgeIP = function() {
       return _setup().then(function() {
@@ -150,6 +146,7 @@ angular.module("hue", []).service("hue", [
     this.setup = function(newconfig) {
       if (newconfig == null) {
         newconfig = {};
+        isReady = false;
       }
       return angular.extend(config, newconfig);
     };
