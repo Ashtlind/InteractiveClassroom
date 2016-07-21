@@ -18,8 +18,8 @@
       .stuprofpic404(ng-show="student.ProfilePicture==undefined") ?
       img(ng-src="{{student.ProfilePicture}}")
   header.dashheader
-    h1 {{classPub.Name}}
-      span.material-icons.classsettings.csr &nbsp;&nbsp;settings
+    h1
+      input.inputinvis(type="text" ng-model-options="{ debounce: 1000 }" ng-model="classPub.Name" ng-change="editedClassName()")
     h5.plain There {{areAndIsAreWeird(Students.StudentTotal)}} currently&nbsp;
       u {{Students.StudentTotal}}
       | &nbsp;active student{{pluralsAreGoodIGuess(Students.StudentTotal)}} in your class.&nbsp;
@@ -45,6 +45,7 @@
     button.btn.open.icon(ng-click="generateInviteCode()" icon="group_add")
     button.btn(ng-click="createNewTopic()") New Topic
     button.btn.open.icon(ng-click="closeOffLesson()" icon="close")
+    button.btn.open.icon(icon="delete" ng-click="deleteClass()")
   .colorbarhueinfo(ng-hide="selectedHue.Bridge&&selectedHue.Light")
     span(ng-show="!selectedHue.Bridge || !selectedHue.Light" class="dark") Please select a Phillips Hue bridge and light
     br

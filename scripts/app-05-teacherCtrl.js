@@ -163,6 +163,18 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
       }
     };
 
+    $scope.deleteClass = function () {
+      $scope.classPub.Deleted = true;
+      $scope.classPub.$save().then(function () {
+        // After the class has been flagged as deleted / Remove it from the teacher's classes
+        // Students classes will be cleaned up by the nav controller on load
+        var partakeClass = $firebaseObject(root.child("Users").child($rootScope.userData.uid).child("Classes").child("Teaches").child($scope.classid));
+        partakeClass.$remove().then(function () {
+          $location.path('/');
+        });
+      });
+    };
+
     $scope.$watch('selectionHue', function (newVal, oldVal) {
       console.log("CHANGE HUE watch");
       console.log(newVal);
@@ -279,6 +291,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     $scope.$watch('Students.List', function (newVal, oldVal) {
       $scope.updateActiveStudents();
     }, true);
+
     // Get class info and setup the basic structure
     $scope.$watch('classPub.CurrentLesson', function (newVal, oldVal) {
       if (newVal != undefined && newVal.uid != undefined) {
@@ -313,6 +326,11 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.Topic = {};
       }
     });
+
+    $scope.editedClassName = function () {
+      // Save the rename class onchange - with 1 second debounce
+      $scope.classPub.$save();
+    };
 
     // Handle the answer calculations - triggered by topic answers watch event
     $scope.updateTopicAnswers = function () {

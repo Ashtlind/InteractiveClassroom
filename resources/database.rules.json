@@ -43,12 +43,12 @@
         "Classes": {
           "Teaches": {
             "$class_id": {
-              ".write": "!root.child('Classes').child($class_id).exists() || root.child('Classes').child($class_id).child('Pub').child('Teacher').val() == auth.uid"
+              ".write": "!root.child('Classes').child($class_id).exists() || root.child('Classes').child($class_id).child('Pub').child('Teacher').val() == auth.uid || !newData.exists()"
             }
           },
           "Partakes": {
             "$class_id": {
-              ".write": "auth.uid === $user_id && (root.child('Joiners').child(newData.child('ReferJoiner').val()).child('ClassUid').val() == $class_id && root.child('Joiners').child(newData.child('ReferJoiner').val()).child('Date').val() > now - (60000*60))"
+              ".write": "auth.uid === $user_id && (!newData.exists() || (root.child('Joiners').child(newData.child('ReferJoiner').val()).child('ClassUid').val() == $class_id && root.child('Joiners').child(newData.child('ReferJoiner').val()).child('Date').val() > now - (60000*60)))"
             }
           }
         },

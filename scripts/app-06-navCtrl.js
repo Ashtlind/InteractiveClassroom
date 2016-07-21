@@ -122,6 +122,12 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
       angular.forEach(newVal, function (partake, key) {
         var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
         theClass.$loaded(function () {
+          // Check if the class has been deleted and un-enroll
+          if (theClass.Deleted) {
+            var partakeClass = $firebaseObject(root.child("Users").child($rootScope.userData.uid).child("Classes").child("Partakes").child(key));
+            partakeClass.$remove();
+          }
+          // Check if the class is active
           var active = false;
           if (theClass.CurrentLesson != "") {
             active = true;
@@ -129,6 +135,7 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
               $scope.partakeActive = true;
             }
           }
+          // Add the class to the list
           $scope.navitemspartakes.push({
             "icon" : "face",
             "link" : "#/class:" + key,
@@ -150,10 +157,17 @@ angular.module('IC').controller('Nav', ['$scope', '$firebaseObject', '$firebaseA
         if (teach.Date != undefined && teach.Date != "") {
           var theClass = $firebaseObject(root.child("Classes").child(key).child("Pub"));
           theClass.$loaded(function () {
+            // Check if the class has been deleted and un-enroll
+            if (theClass.Deleted) {
+              var partakeClass = $firebaseObject(root.child("Users").child($rootScope.userData.uid).child("Classes").child("Teaches").child(key));
+              partakeClass.$remove();
+            }
+            // Check if the class is active
             var active = false;
             if (theClass.CurrentLesson != "") {
               active = true;
             }
+            // Add the class to the list
             $scope.navitemsteaches.push({
               "icon" : "stars",
               "link" : "#/dashboard:" + key,

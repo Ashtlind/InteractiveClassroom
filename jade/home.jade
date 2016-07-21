@@ -2,13 +2,13 @@
   header.homeheader
     h1 Interactive Classroom
     .homebtngrp(ng-class="btngrpclass")
-      button(class="btn", ng-click="classroom(false)").homebtngrp-left
-      input(type="Text", ng-model="invitecode", my-enter="secondary()").homebtngrp-left-input
+      button(class="btn" ng-click="classroom(false)").homebtngrp-left
+      input(type="Text" ng-model="invitecode" my-enter="secondary()").homebtngrp-left-input
       label.homebtngrp-left-input-label {{labeltext}}&nbsp;
-        a(href="", ng-click="cancel()") close
-      button(class="btn",ng-click="secondary()").open.homebtngrp-right
+        a(href="" ng-click="cancel()") close
+      button(class="btn" ng-click="secondary()").open.homebtngrp-right
   .homeface
-    include ../svg/happyFace.svg
+    include ../svg/HappyFace.svg
   footer Interactive Classroom is an initiative of&nbsp;
     a(target="_blank" href="http://stpeters.qld.edu.au") St Peters Lutheran College
     | &nbsp;- Created by&nbsp;
