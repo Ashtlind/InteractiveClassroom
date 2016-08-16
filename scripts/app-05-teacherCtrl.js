@@ -164,15 +164,25 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     };
 
     $scope.deleteClass = function () {
-      $scope.classPub.Deleted = true;
-      $scope.classPub.$save().then(function () {
-        // After the class has been flagged as deleted / Remove it from the teacher's classes
-        // Students classes will be cleaned up by the nav controller on load
-        var partakeClass = $firebaseObject(root.child("Users").child($rootScope.userData.uid).child("Classes").child("Teaches").child($scope.classid));
-        partakeClass.$remove().then(function () {
-          $location.path('/');
+      if ($scope.userData.DeleteClassConf) {
+        $scope.classPub.Deleted = true;
+        $scope.classPub.$save().then(function () {
+          // After the class has been flagged as deleted / Remove it from the teacher's classes
+          // Students classes will be cleaned up by the nav controller on load
+          var partakeClass = $firebaseObject(root.child("Users").child($rootScope.userData.uid).child("Classes").child("Teaches").child($scope.classid));
+          partakeClass.$remove().then(function () {
+            $location.path('/');
+          });
         });
-      });
+      } else {
+        $scope.userData.DeleteClassConf = true;
+      }
+    };
+
+    $scope.deleteClassIcon = function () {
+      if ($scope.userData.DeleteClassConf)
+        return "check";
+      return "delete";
     };
 
     $scope.$watch('selectionHue', function (newVal, oldVal) {

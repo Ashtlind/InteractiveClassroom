@@ -42,10 +42,10 @@
       button.btn.open(ng-click="hueTestPatternRetry()" ng-hide="selectedHue.Light.state.reachable") Check again
       button.btn.open.icon(icon="close" ng-click="clearSelectedHue()")
   .actionbuttoncont
-    button.btn.open.icon(ng-click="generateInviteCode()" icon="group_add")
     button.btn(ng-click="createNewTopic()") New Topic
+    button.btn.open.icon(ng-click="generateInviteCode()" icon="group_add")
     button.btn.open.icon(ng-click="closeOffLesson()" icon="close")
-    button.btn.open.icon(icon="delete" ng-click="deleteClass()")
+    button.btn.open.icon(icon="{{deleteClassIcon()}}" ng-click="deleteClass()")
   .colorbarhueinfo(ng-hide="selectedHue.Bridge&&selectedHue.Light")
     span(ng-show="!selectedHue.Bridge || !selectedHue.Light" class="dark") Please select a Phillips Hue bridge and light
     br
