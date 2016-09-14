@@ -11,7 +11,7 @@ var gulp = require("gulp"),
     flatten = require("gulp-flatten"),
     uglify = require("gulp-uglify"),
     sass = require('gulp-sass'),
-    jade = require('gulp-jade'),
+    pug = require('gulp-pug'),
     rename = require('gulp-rename'),
     webserver = require('gulp-webserver'),
     autoprefixer = require('gulp-autoprefixer');
@@ -29,13 +29,13 @@ paths.appScriptsMinifiedWildcard = paths.projectBase + "scripts/**/*.min.js";
 // Styles are combined in sass by appending to app.sass - no need for wildcards
 paths.appStylesWildcard = paths.projectBase + "styles/app.sass";
 paths.appStylesMinifiedWildcard = paths.projectBase + "styles/**/*.min.css";
-paths.appJadeWildcard = paths.projectBase + "jade/*.jade";
+paths.appPugWildcard = paths.projectBase + "pug/*.pug";
 
 // www directory compiles
 paths.webRoot = paths.projectBase + "www/";
 paths.scriptsWWW = paths.webRoot + "scripts/";
 paths.stylesWWW = paths.webRoot + "styles/";
-paths.jadeWWW = paths.webRoot + "views/";
+paths.pugWWW = paths.webRoot + "views/";
 paths.appTargetScript = paths.scriptsWWW + "app.min.js";
 paths.appTargetStyle = paths.stylesWWW + "app.min.css"
 paths.libTargetScript = paths.scriptsWWW + "vendor.min.js";
@@ -156,27 +156,27 @@ gulp.task("build:styles", ["clean:styles"], function () {
       .pipe(gulp.dest(paths.stylesWWW));
 });
 
-// Compile the jade into html in the web root / views directory
-gulp.task('build:jadecompile', function () {
-  return gulp.src(paths.appJadeWildcard)
-    .pipe(jade())
-    .pipe(gulp.dest(paths.jadeWWW));
+// Compile the pug into html in the web root / views directory
+gulp.task('build:pugcompile', function () {
+  return gulp.src(paths.appPugWildcard)
+    .pipe(pug())
+    .pipe(gulp.dest(paths.pugWWW));
 });
-// Runs jadecompile as dependancy - then will move the index file into the web root
-gulp.task('build:jadeindex', ['build:jadecompile'], function () {
-  return gulp.src(paths.jadeWWW + 'index.html')
+// Runs pugcompile as dependancy - then will move the index file into the web root
+gulp.task('build:pugindex', ['build:pugcompile'], function () {
+  return gulp.src(paths.pugWWW + 'index.html')
     .pipe(gulp.dest(paths.webRoot));
 });
-// Runs jadeindex as dependancy which copys the index.html to the web root - then will remove the index file from views
-gulp.task("build:jade", ["build:jadeindex"], function () {
-    return del(paths.jadeWWW + 'index.html');
+// Runs pugindex as dependancy which copys the index.html to the web root - then will remove the index file from views
+gulp.task("build:pug", ["build:pugindex"], function () {
+    return del(paths.pugWWW + 'index.html');
 });
 
 // Use this task to rebuild minified, concatenated versions of vendor, scripts and styles folder
-gulp.task("build:all", ["build:scripts", "build:styles", "build:jade", "build:vendor"]);
+gulp.task("build:all", ["build:scripts", "build:styles", "build:pug", "build:vendor"]);
 
 // Use this task to only rebuild minified, concatenated versions of scripts and styles folders but excluding the vendor folder
-gulp.task("build:user", ["build:scripts", "build:styles", "build:jade"]);
+gulp.task("build:user", ["build:scripts", "build:styles", "build:pug"]);
 
 gulp.task('webserver', function() {
   gulp.src(paths.webRoot)
@@ -190,6 +190,6 @@ gulp.task('webserver', function() {
 // Run the webserver and watch for source changes
 gulp.task("default", ["webserver"], function() {
   gulp.watch('./styles/**/*.s*ss', ['build:styles']);
-  gulp.watch('./jade/*.jade', ['build:jade']);
+  gulp.watch('./pug/*.pug', ['build:pug']);
   gulp.watch('./scripts/*.js', ['build:scripts']);
 });

@@ -9,7 +9,12 @@ Realtime classroom feedback with phillips hue
 ### Teacher Dashboard
 ![student dashboard screenshot](/resources/Teacher.png "Teacher Dashboard")
 
-### Firebase for realtime JSON database
+### Deployment
+```
+git clone https://github.com/Ashtlind/InteractiveClassroom.git
+cd InteractiveClassroom
+```
+#### Firebase for realtime JSON database
 http://firebase.google.com
 See resources/struct.json and resources/database.rules.json for database layout and security.
 * You will require a firebase.google.com account with a new blank project for development or deployment
@@ -22,19 +27,24 @@ var config = {
     storageBucket: "<Your firebase storage url>",
   };
 ```
-
-### Deployment
-Copy out the 'www' directory as the web-root, and run it up on pretty much any webserver.
+##### Run the following to build these config changes
 ```
-git clone https://github.com/SPLCIS/InteractiveClassroom.git
-cd InteractiveClassroom/www
+npm install
+gulp build:scripts
 ```
-
-Or deploy the project directly to firebase hosting:
+##### Copy out the 'www' directory as the web-root, and run it up on pretty much any webserver. Then deploy the database
 ```
-git clone https://github.com/SPLCIS/InteractiveClassroom.git
+cd InteractiveClassroom
+cp -r www/ somewhereawesome/
+firebase login
+firebase use --add
+firebase deploy --only database
+```
+##### Or deploy the project directly and database to firebase hosting
+```
 cd InteractiveClassroom
 firebase login
+firebase use --add
 firebase deploy
 ```
 
@@ -77,12 +87,10 @@ forever start proxy.js
 ```
 
 ### Development
-##### Get set up
+##### Repeat deployment steps then
 ```
-git clone https://github.com/SPLCIS/InteractiveClassroom.git
-cd InteractiveClassroom
 bower install
-npm install
+npm install --dev
 gulp build:all
 ```
 ##### Run the dev webserver and watch for file changes
