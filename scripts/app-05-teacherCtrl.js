@@ -190,8 +190,6 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     };
 
     $scope.$watch('selectionHue', function (newVal, oldVal) {
-      console.log("CHANGE HUE watch");
-      console.log(newVal);
       if (newVal != undefined) {
         if (newVal.BridgeSel != undefined && newVal.BridgeSel != "" && newVal.BridgeSel != oldVal.BridgeSel) {
           // The angular select saves the object in escaped json to BridgeSel
