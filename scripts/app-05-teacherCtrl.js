@@ -33,8 +33,10 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
     $scope.setHueColor = function (r,g,b) {
       if ($scope.selectedHue.Bridge != undefined && $scope.selectedHue.Bridge.ip != undefined) {
         var on = true;
-        if ((r<=0 && g<=0 && b<=0) || ($scope.Students!= undefined && $scope.Students.StudentTotal != undefined && $scope.Students.StudentTotal<=0))
+        if ((r<=0 && g<=0 && b<=0) || ($scope.Students!= undefined && $scope.Students.StudentTotal != undefined && $scope.Students.StudentTotal<=0)) {
+          $scope.currentColourStyle = "0,0,0";
           on = false;
+        }
         var xy = $scope.convertRGBtoXY(r,g,b);
         myHue.setLightState($scope.selectedHue.Light.id, {"on": on, "bri": 254, "xy": xy, "transitiontime": 0}).then(function(response) {
         });
@@ -51,6 +53,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.classPub = {};
         $scope.selectedHue = {};
         $scope.selectionHue = {};
+        $scope.currentColourStyle = "0,0,0";
       } else {
         $scope.userData = {};
         $scope.colorsLive = {};
@@ -58,6 +61,7 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         $scope.classPub = {};
         $scope.selectedHue = {};
         $scope.selectionHue = {};
+        $scope.currentColourStyle = "0,0,0";
         // Init some controller globals
         $scope.userData = $firebaseObject(root.child("Users").child(guid).child("User"));
         // Load the color profile for hue
@@ -539,12 +543,16 @@ angular.module('IC').controller('Teacher', ['$scope', '$firebaseObject', '$fireb
         var ret = "bgc-gray";
         var lastperc = 0;
         angular.forEach($scope.colors, function(col, key) {
-          if (lastperc <= $scope.Answers.Perc && lastperc+col.perc > $scope.Answers.Perc) {
+          if (lastperc <= $scope.Answers.Perc && lastperc+col.perc >= $scope.Answers.Perc) {
             ret = "bglc-" + col.color;
             var color = $("#color-" + key).css("color");
             var matchColors = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/;
             var match = matchColors.exec(color);
+            var colorlocal = $("#color-" + key).css("background-color");
+            var matchColorslocal = /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/;
+            var matchlocal = matchColorslocal.exec(colorlocal);
             if (match !== null) {
+                $scope.currentColourStyle = matchlocal[1] + "," + matchlocal[2] + "," + matchlocal[3];
                 $scope.setHueColor(match[1],match[2],match[3]);
             }
           }

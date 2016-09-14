@@ -2,8 +2,12 @@
 Realtime classroom feedback with phillips hue
 
 ## Screenies
-![homepage screenshot](/resources/home.jpg "Homepage")
-![student dashboard screenshot](/resources/student.jpg "Student Dashboard")
+### Landing Page
+![homepage screenshot](/resources/Home.jpg "Homepage")
+### Student Feedback Interface
+![student dashboard screenshot](/resources/Student.jpg "Student Dashboard")
+### Teacher Dashboard
+![student dashboard screenshot](/resources/Teacher.png "Teacher Dashboard")
 
 ### Firebase for realtime JSON database
 http://firebase.google.com

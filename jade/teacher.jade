@@ -62,12 +62,12 @@
       .material-icons(ng-if="colorbarselect" class="light" ng-click="clearSelectedHue()") not_interested
       span(ng-show="!colorbarselect && selectedHue.Bridge && selectedHue.Light" class="dark") Connected to Phillips Hue: {{selectedHue.Bridge.Name}} - {{selectedHue.Light.name}}
     .colorbarindicatorcont
-      .colorbarindicator.material-icons(style="left: {{Answers.Perc}}%") lightbulb_outline
+      .colorbarindicator.material-icons(style="left: {{Answers.Perc}}%; background-color: rgba({{currentColourStyle}},0.4)") lightbulb_outline
     .colorbarselector(ng-show="colorbarselect")
       .colorbarselect(ng-repeat="color in avalicolors" data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorStart', onStop:'draggingColorStop'}" class="bglc-{{color}}" ng-model="color")
       .colorbarselect(data-drag="true" data-jqyoui-options="{revert: true}" jqyoui-draggable="{animate:true, placeholder:'keep', onStart:'draggingColorRemoveStart', onStop:'draggingColorRemoveStop'}" class="removecolor" ng-model="removeColor")
         span.material-icons highlight_off
-    .colorbar
+    .colorbar(style="box-shadow: 0 -0.3rem 0 0 rgb({{currentColourStyle}})")
       .colorbarfacel
         include ../svg/ConfusedFace.svg
       .colorbarcoloraddl(ng-show="draggingColor" data-drop="true" jqyoui-droppable="{onDrop: 'droppedColor', onOver: 'dropColorHoverOver', onOut: 'dropColorHoverOut'}" ng-model="colorbaradd.left")

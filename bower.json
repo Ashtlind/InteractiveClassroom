@@ -26,5 +26,8 @@
     "angular-resizable": "^1.2.0",
     "angular-dragdrop": "^1.0.13",
     "angular-touch": "^1.5.7"
+  },
+  "resolutions": {
+    "angular": "^1.5.6"
   }
 }
